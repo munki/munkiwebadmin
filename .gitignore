@@ -1,0 +1,5 @@
+*.pyc
+*.pyo
+munkiadmin.db
+.DS_Store
+unused_*
