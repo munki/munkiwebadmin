@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{{% block content %}
+<form name='delete_form' action="{% url manifests.views.delete manifest_name %}" method="post">
+{% csrf_token %}
+<h2>Really delete manifest {{ manifest_name }}?</h2>
+<br>
+<input class='btn btn-danger' type="submit" value="Delete" />
+<input class='btn' type='button' class='cancel' value='Cancel' onclick="history.go(-1);"></input>
+</form>
+{% endblock content %}

@@ -1,0 +1,96 @@
+#detail {
+	overflow : auto;
+	margin-left: 8px;
+	position: relative;
+    height: 100%;
+    width: 100%;
+}
+ul.section, ul.included_manifests_section, ul.catalogs_section, ul.user_section {
+	border-right: 1px solid #C1DAD7;
+	border-left: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	border-top: 1px solid #C1DAD7;
+	/*margin-left: 10px;
+	margin-right: 10px;
+	text-align: left;
+	padding: 6px 6px 6px 12px;
+	background: #EEEEEE;
+	position: relative;
+	left: 0px;
+	list-style-type: none;*/
+}
+.section_label, .name_label {
+	/*font: 14px Helvetica, Arial, Verdana, sans-serif;
+	font: 14px ;*/
+	font-weight: bold;
+	/*padding: 2px 5px;*/
+	margin: 0 0 6px 0;
+	/*display: block;*/
+}
+.lineitem, .nameitem {
+	/*font: 12px Helvetica, Arial, Verdana, sans-serif;*/
+	padding: 2px 2px 2px 2px;
+	margin: 3px 3px;
+	background-color: #FFFFFF;
+	min-height: 16px;
+}
+.ui-sortable {
+  cursor: move;
+}
+.lineiteminput {
+	min-width: 200px;
+}
+.error {
+	color: red;
+}
+div.editable {
+	float: left;
+}
+.lineitem_delete, .add_item {
+	float: right;
+	font-size: 10px;
+}
+.add_item {
+    margin-right: 6px;
+}
+.ui-autocomplete {
+	font-size: 12px;
+	max-height: 200px;
+	overflow-y: auto;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+	/* add padding to account for vertical scrollbar */
+	padding-right: 20px;
+}
+.manifest {
+	/*font: 12px Helvetica, Arial, Verdana, sans-serif;*/
+	padding: 2px 2px 2px 2px;
+	/*margin: 3px 3px;
+	background-color: #FFFFFF;*/
+	min-height: 14px;
+}
+.manifest_header {
+	font-weight: bold;
+	padding: 2px 2px 2px 2px;
+	min-height: 14px;
+}
+div.edit_controls {
+	float: right;
+}
+#index_progress_indicator {
+	position: relative;
+	left: 50%;
+	z-index: 1234;
+	margin-left: -25px; /* half width of the spinner gif */
+	width: 50px; /* width of the spinner gif */
+	height: 52px; /*height of the spinner gif +2px to fix IE8 issue */
+}
+#detail_progress_indicator {
+    z-index: 1234;
+	position: absolute;
+	left: 50%;
+	margin-left: -25px; /* half width of the spinner gif */
+	width: 50px; /* width of the spinner gif */
+	height: 52px; /*height of the spinner gif +2px to fix IE8 issue */
+}
+

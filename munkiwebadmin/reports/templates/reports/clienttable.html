@@ -1,0 +1,57 @@
+{% if list_title %}
+  <h3>{{ list_title }} <span class='badge badge-info'>{{ report_list|length }}</span></h3>
+{% endif %}
+{% if report_list|length %}
+  <p/>
+  <table class='clientlist table table-striped table-condensed'>
+      <thead>
+          <tr>
+            <th>Machine   </th>
+            <th>User      </th>
+            <th>IP        </th>
+            <th>Latest Run</th>
+          </tr>
+          </tr>
+      </thead>
+      <tbody>
+      {% for report in report_list %}
+          <tr>
+              <td>
+                <a href='{% url reports.views.detail report.machine.mac %}'>
+                  {{ report.machine.hostname }}
+                </a>
+              </td>
+              <td>{{ report.console_user }}</td>
+              <td class='ip'>{{ report.machine.remote_ip }}</td>
+              <td>
+                  {{ report.timestamp|date:"Y-m-d H:i" }}
+                  {% if report.updating %}
+                    {{ report.runtype }} run in progress
+                  {% else %}
+                    {{ report.runtype }}
+                  {% endif %}
+                  {{ report.runstate }}
+                  {% if report.errors %}
+                    {{ report.errors }} error{{ report.errors|pluralize }}
+                  {% endif %}
+                  {% if report.warnings %}
+                    {{ report.warnings }} warning{{ report.warnings|pluralize }}
+                  {% endif %}
+                  {% if report.pending_installs %}
+                    {{ report.pending_installs }} pending install{{ report.pending_installs|pluralize }}
+                  {% endif %}
+                  {% if report.install_results %}
+                    {{ report.install_results }} package{{ report.install_results|pluralize }} installed
+                  {% endif %}
+                  {% if report.pending_removals %}
+                    {{ report.pending_removals }} pending removal{{ report.pending_removals|pluralize }}
+                  {% endif %}
+                  {% if report.removal_results %}
+                    {{ report.removal_results }} package{{ report.removal_results|pluralize }} removed
+                  {% endif %}
+              </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+{% endif %}
