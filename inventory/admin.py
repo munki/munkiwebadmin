@@ -1,5 +1,5 @@
 from django.contrib import admin
-from munkiadmin.inventory.models import Inventory, InventoryItem
+from munkiwebadmin.inventory.models import Inventory, InventoryItem
 
 class InventoryAdmin(admin.ModelAdmin):
     list_display = ('machine', 'datestamp', 'sha256hash')
