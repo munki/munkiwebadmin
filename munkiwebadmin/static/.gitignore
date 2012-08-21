@@ -1,0 +1,5 @@
+# This directory must exist, but its contents are populated by python manage.py collectstatic.
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
