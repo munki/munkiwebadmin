@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block java_script %}
+{% load static %}
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        $('.clientlist').dataTable({
+            "aaSorting": [[4,'dec']],
+            "bFilter": false,
+            "bInfo": false,
+            "bPaginate": false
+        });
+    } );
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div id="accordion">
+  <div>
+    <h3>Errors <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class='badge badge-important'>{{ error_reports|length }}</span></a></h3>
+  </div>
+  <div id="collapseOne" class="collapse in">
+    {% with report_list=error_reports list_title='' %}
+      {% include 'reports/clienttable.html' %}
+    {% endwith %}
+  </div>
+  <div>
+    <h3>Warnings <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span class='badge badge-warning'>{{ warning_reports|length }}</span></a></h3>
+  </div>
+  <div id="collapseTwo" class="collapse in">
+    {% with report_list=warning_reports list_title='' %}
+      {% include 'reports/clienttable.html' %}
+    {% endwith %}
+  </div>
+  <div>
+    <h3>Activity <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span class='badge badge-info'>{{ activity_reports|length }}</span></a></h3>
+  </div>
+  <div id="collapseThree" class="collapse in">
+    {% with report_list=activity_reports list_title='' %}
+      {% include 'reports/clienttable.html' %}
+    {% endwith %}
+  </div>
+</div>
+
+<h3>Clients <a href="/report/index"><span class="badge badge-info">{{ total_reports_count }}</span></a></h3>
+
+{% endblock %}

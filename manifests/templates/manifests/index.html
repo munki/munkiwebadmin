@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block extra_style %}
+{% load static %}
+<link rel="stylesheet" href="{% get_static_prefix %}css/manifests.css" type="text/css" media="all" />
+{% endblock %}
+
+{% block java_script %}
+{% load static %}
+<script type='text/javascript' 
+  src='{% get_static_prefix %}js/manifests.js'>
+</script>
+{% endblock %}
+
+{% block body_tag %}
+<body {% if manifest_name %}onLoad="getManifestDetail('{{manifest_name}}')"{% endif %}>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+<div class="span5">
+
+<form class='well form-horizontal' id='search' action='/manifest/' method='get'>
+	<label for='section'>Section:</label>
+	<select class='span2' id='section' name='section'>
+    <option value='manifest_name' {% if section == 'manifest_name' %} selected='selected' {% endif %}>manifest name</option>
+    <option value='user_name' {% if section == 'user_name' %} selected='selected' {% endif %}>user name</option>
+		{% for section_name in available_sections %}
+			<option value='{{ section_name }}' {% if section_name == section %} selected='selected' {% endif %}>{{ section_name }}</option>
+		{% endfor %}
+	</select>
+	<input class='span2' type='text' name='findtext' value='{{ findtext }}' />
+	<input class='btn' type='submit' value='Search' />
+	<span class='muted'>Hint: you can use shell-style wildcards in searches for 'fuzzy' matches.</span>
+</form>
+	
+<h3>Manifests
+  <span class="badge badge-info">{{ manifest_list|length }}</span>
+</h3>
+{% if manifest_list %}
+	{% url manifests.views.index as the_url %}
+	<table class="table table-striped table-condensed" id='manifest_list_table'>
+	<thead>
+	<tr>
+	<th>Name</th>
+	<th>User</th>
+	</tr>
+	</thead>
+	<tbody>
+		{% for manifest in manifest_list %}
+		<tr>
+			<td>
+			  <a class='manifest' id='{{ manifest.name }}' href='#'>{{ manifest.name }}</a>
+			</td>
+			<td>{{ manifest.user|truncatewords:3 }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	</table>
+{% else %}
+    <p>No manifests are available.</p>
+{% endif %}
+{% if show_edit_controls %}
+    <p/><p/>
+    <a class='btn btn-success' id='new_manifest' href='#' onclick="location.href='{% url manifests.views.new %}';">
+    <i class='icon-plus icon-white'></i> New manifest</a>
+    <a class='btn btn-danger disabled pull-right' id='delete_manifest' href='#' onclick="deleteManifest();">
+    <i class='icon-trash icon-white'></i> Delete manifest</a>
+{% endif %}
+</div>
+
+<div class="span7">
+<div id="detail">
+  <div id='index_progress_indicator'>
+    {% load static %}
+    <img src="{% get_static_prefix %}img/loading.gif" style="display: none;" id="imgProgress" />
+  </div>
+  <div height=200px></div>
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Catalogs</h3>
+<p/>
+{% if catalog_list %}
+    <ul>
+    {% for catalog in catalog_list %}
+        <li><a href="/catalog/{{ catalog }}/">{{ catalog }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No catalogs are available.</p>
+{% endif %}
+{% endblock %}
