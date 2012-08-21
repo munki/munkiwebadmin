@@ -1,0 +1,57 @@
+#!/bin/bash
+
+BASEURL="http://localhost:8000"
+SUBMITURL="${BASEURL}/update"
+LOOKUPURL="${BASEURL}/lookup/ip"
+
+RUNTYPE="$1"
+MAC=`ifconfig en0 | awk '/ether/ {print $2}'`
+NAME=`/usr/sbin/scutil --get ComputerName`
+
+# Enter a list of networks where Munki runs are allowed.
+ALLOWED_PREFIXES=( )
+# To skip the network check, set ALLOWED_PREFIXES to an empty list:
+#ALLOWED_PREFIXES=( )
+
+if [ "$RUNTYPE" == "custom" -o "$RUNTYPE" == "auto" ]; then
+    if [ ! -z "$ALLOWED_PREFIXES" ]; then
+        echo "Checking network"
+        
+        external_ip=`curl --max-time 5 --silent --fail "${LOOKUPURL}"`
+        if [ $? -ne 0 ]; then
+            echo "External IP lookup failed, aborting munki run"
+            exit 1
+        fi
+        
+        prefix_ok="no"
+        for prefix in ${ALLOWED_PREFIXES[@]}; do
+            echo -n "Checking $prefix for IP address $external_ip"
+            prefix_len=$( echo `echo "$prefix" | tr . '\012' | wc -l` )
+            for (( i=$prefix_len ; i<4 ; i++ )); do
+                echo -n '.x'
+            done
+            my_ip_prefix=`echo $external_ip | cut -d. -f1-$prefix_len`
+            if [ "$my_ip_prefix" == "$prefix" ]; then
+                echo ": Inside"
+                prefix_ok="yes"
+                break
+            else
+                echo ": Outside"
+            fi
+        done
+        if [ "$prefix_ok" == "yes" ]; then
+            echo "Network check OK, proceeding with munki run"
+        else
+            echo "Network check failed, aborting munki run"
+            exit 1
+        fi
+    fi
+fi
+
+curl --max-time 5 --silent \
+    -d runtype="$RUNTYPE" \
+    -d mac="$MAC" \
+    -d name="$NAME" \
+    "$SUBMITURL/preflight"
+
+exit 0

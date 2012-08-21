@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BASEURL="http://localhost:8000"
+SUBMITURL="${BASEURL}/update"
+
+RUNTYPE="$1"
+if [ -z "$RUNTYPE" ]; then
+    RUNTYPE="reportbrokenclient"
+fi
+MAC=`ifconfig en0 | awk '/ether/ {print $2}'`
+NAME=`/usr/sbin/scutil --get ComputerName`
+
+curl --max-time 5 --silent \
+    -d runtype="$RUNTYPE" \
+    -d mac="$MAC" \
+    -d name="$NAME" \
+    "$SUBMITURL/report_broken_client"
+
+exit 0
