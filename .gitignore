@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+settings.py
 munkiadmin.db
 .DS_Store
 unused_*
