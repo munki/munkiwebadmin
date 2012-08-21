@@ -107,7 +107,7 @@ STATIC_URL = '/static/'
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
 # deprecated in Django 1.4, but django_wsgiserver still looks for it
 # when serving admin media
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = '/static_admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
