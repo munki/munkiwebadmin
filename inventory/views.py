@@ -31,33 +31,6 @@ def decode_to_string(base64bz2data):
         return ''
 
 
-#def get_sort_data(request_GET, fields):
-#    '''Builds a dict containing class names and sort queries for
-#    table headers for data display.'''
-#    reverse = (request_GET.get('reverse', 'false').lower() == 'true')
-#    order_by = request_GET.get('order_by')
-#    if reverse:
-#        class_names = u'sorted descending'
-#        sort_flip = u'false'
-#    else:
-#        class_names = u'sorted ascending'
-#        sort_flip = u'true'
-#    sort = {}
-#    for field in fields:
-#        sort[field] = {}
-#        field_query = request_GET.copy()
-#        field_query['order_by'] = field
-#        if order_by == field:
-#            field_query['reverse'] = sort_flip
-#            sort[field]['class'] = class_names
-#        else:
-#            field_query['reverse'] = 'false'
-#            sort[field]['class'] = u''
-#        sort[field]['query'] = field_query.urlencode()
-#
-#    return sort
-
-
 @csrf_exempt
 def submit(request):
     if request.method != 'POST':

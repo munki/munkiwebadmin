@@ -242,37 +242,3 @@ def detail(request, manifest_name):
             'page': 'manifests'})
         c.update(csrf(request))
         return render_to_response('manifests/detail.html', c)
-        
-        
-#def login_view(request):
-#    if request.method == 'POST':
-#        username = request.POST['username']
-#        password = request.POST['password']
-#        user = authenticate(username=username, password=password)
-#        if user is not None:
-#            if user.is_active:
-#                login(request, user)
-#                return HttpResponse("Success")
-#                # Redirect to a success page.
-#            else:
-#                # Return a 'disabled account' error message
-#                return HttpResponse("Disabled")
-#        else:
-#            # Return an 'invalid login' error message.
-#            return HttpResponse("Invalid login")
-#
-#    if request.method == 'GET':
-#        # display login form
-#        c = RequestContext(request, {})
-#        c.update(csrf(request))
-#        return render_to_response('manifests/login.html', c)
-
-
-#def logout_view(request):
-#    logout(request)
-#    return HttpResponse("Logged you out.")
-    
-
-#@login_required
-#def edit(request, manifest_name):
-#    return index(request, manifest_name=manifest_name, allow_edit=True)

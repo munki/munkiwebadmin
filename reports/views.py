@@ -17,18 +17,6 @@ import re
 from datetime import datetime
 
 
-#def decode(base64bz2data):
-#    '''Decodes an encoded submission, which is a plist-encoded
-#    list, compressed via bz2 and base64 encoded.'''
-#    try:
-#        bz2data = base64.b64decode(base64bz2data)
-#        string = bz2.decompress(bz2data)
-#        plist = plistlib.readPlistFromString(string)
-#        return plist
-#    except Exception:
-#        return []
-
-
 @csrf_exempt
 def submit(request, submission_type):
     if request.method != 'POST':
@@ -111,33 +99,6 @@ def submit(request, submission_type):
                  submit.get('name'))
     
     return HttpResponse("No report submitted.\n")
-
-
-#def get_sort_data(request_GET, fields):
-#    '''Builds a dict containing class names and sort queries for
-#    table headers for data display.'''
-#    reverse = (request_GET.get('reverse', 'false').lower() == 'true')
-#    order_by = request_GET.get('order_by')
-#    if reverse:
-#        class_names = u'sorted descending'
-#        sort_flip = u'false'
-#    else:
-#        class_names = u'sorted ascending'
-#        sort_flip = u'true'
-#    sort = {}
-#    for field in fields:
-#        sort[field] = {}
-#        field_query = request_GET.copy()
-#        field_query['order_by'] = field
-#        if order_by == field:
-#            field_query['reverse'] = sort_flip
-#            sort[field]['class'] = class_names
-#        else:
-#            field_query['reverse'] = 'false'
-#            sort[field]['class'] = u''
-#        sort[field]['query'] = field_query.urlencode()
-#
-#    return sort
 
 
 @login_required
@@ -299,8 +260,4 @@ def raw(request, mac):
 
 def lookup_ip(request):
     return HttpResponse(request.META['REMOTE_ADDR'], mimetype='text/plain')
-    
-
-#def logout(request):
-#    logout_then_login(request)
     

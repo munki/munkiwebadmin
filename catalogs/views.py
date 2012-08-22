@@ -45,36 +45,6 @@ def trimVersionString(version_string):
     return '.'.join(version_parts)
 
 
-#@login_required
-#def index(request):
-#    catalog_list = Catalog.list()
-#    return render_to_response('catalogs/index.html', 
-#                              {'catalog_list': catalog_list})
-                              
-
-#@login_required                              
-#def detail(request, catalog_name, item_name=None):
-#    catalog = Catalog.detail(catalog_name)
-#    if item_name:
-#        (name, vers) = nameAndVersion(item_name)
-#        if vers:
-#            catalog = [item for item in catalog
-#                       if item['name'] == name
-#                       and trimVersionString(item['version']) == 
-#                           trimVersionString(vers)]
-#            if len(catalog) == 1:
-#                return render_to_response('catalogs/item_detail.html', 
-#                                         {'catalog_item': catalog[0]})
-#        else:
-#            catalog = [item for item in catalog
-#                       if item['name'] == name]
-#                       
-#    return render_to_response('catalogs/detail.html', 
-#                              {'catalog_name': catalog_name,
-#                               'catalog': catalog,
-#                               'page': 'catalogs'})
-                               
-
 @login_required                              
 def item_detail(request, catalog_name, item_index):
     catalog_item = Catalog.item_detail(catalog_name, item_index)
