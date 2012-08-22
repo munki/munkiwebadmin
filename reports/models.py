@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 import plistlib
+from xml.parsers.expat import ExpatError
 import base64
 import bz2
 
@@ -45,11 +46,17 @@ class MunkiReport(models.Model):
         return b64data
         
     def decode(self, data):
+        # this has some sucky workarounds for odd handling
+        # of UTF-8 data in sqlite3
         try:
-            plist = plistlib.readPlistFromString(data.encode('UTF-8'))
+            plist = plistlib.readPlistFromString(data)
             return plist
-        except Exception:
-            return self.b64bz_decode(data)
+        except ExpatError:
+            try:
+                plist = plistlib.readPlistFromString(data.encode('UTF-8'))
+                return plist
+            except ExpatError:
+                return self.b64bz_decode(data)
         
     def b64bz_decode(self, data):
         try:
