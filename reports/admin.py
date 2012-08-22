@@ -1,5 +1,5 @@
 from django.contrib import admin
-from munkiadmin.reports.models import Machine, MunkiReport
+from reports.models import Machine, MunkiReport
 
 class MachineAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'mac', 'username', 'last_munki_update',

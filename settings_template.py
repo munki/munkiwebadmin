@@ -1,4 +1,4 @@
-# Django settings for munkiadmin project.
+# Django settings for munkiwebadmin project.
 import os
 
 USE_LDAP = False
@@ -40,7 +40,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_DIR, 'munkiadmin.db'),                      # Or path to database file if using sqlite3.
+        'NAME': os.path.join(PROJECT_DIR, 'munkiwebadmin.db'),                      # Or path to database file if using sqlite3.
         'USER': '',     # Not used with sqlite3.
         'PASSWORD': '', # Not used with sqlite3.
         'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
@@ -107,7 +107,7 @@ STATIC_URL = '/static/'
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
 # deprecated in Django 1.4, but django_wsgiserver still looks for it
 # when serving admin media
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = '/static_admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
