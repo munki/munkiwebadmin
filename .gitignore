@@ -1,6 +1,6 @@
 *.pyc
 *.pyo
 settings.py
-munkiadmin.db
+munkiwebadmin.db
 .DS_Store
 unused_*
