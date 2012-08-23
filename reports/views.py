@@ -176,6 +176,11 @@ def detail(request, mac):
         except MunkiReport.DoesNotExist:
             pass
             
+    # convert forward slashes in manifest names to colons
+    if 'ManifestName' in report_plist:
+        report_plist['ManifestNameLink'] = report_plist[
+                                            'ManifestName'].replace('/', ':')
+            
     # handle items that were installed during the most recent run
     install_results = {}
     for result in report_plist.get('InstallResults', []):
