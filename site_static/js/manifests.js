@@ -39,7 +39,7 @@ $(document).ready(function(){
 
 function deleteManifest() {
   var manifest_name = $('.manifest_name').attr('id');
-  location.href='/manifest/delete/' + manifest_name.replace('/', ':');
+  location.href='/manifest/delete/' + manifest_name.replace(/\//g, ':');
 }
 
 function cleanDetailPane() {
@@ -71,7 +71,7 @@ function getManifestDetail(manifest_name) {
 	$("#imgProgress").show();
     cleanDetailPane();
 	// get new detail for the pane
-	var manifestURL = '/manifest/detail/' + manifest_name.replace('/', ':');
+	var manifestURL = '/manifest/detail/' + manifest_name.replace(/\//g, ':');
 	$.get(manifestURL, function(data) {
 		$('#detail').html(data);
 		$('.edit').click(function(){
@@ -214,7 +214,7 @@ function getManifestDetailFromDOMAndSave() {
 		}
 	});
 	var postdata = JSON.stringify(manifest)
-	var postURL = '/manifest/detail/' + manifest_name.replace('/', ':');
+	var postURL = '/manifest/detail/' + manifest_name.replace(/\//g, ':');
 	//alert(postdata);
 	//console.log(postdata);
 	$.ajax({
