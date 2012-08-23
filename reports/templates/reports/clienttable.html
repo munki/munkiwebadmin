@@ -18,7 +18,11 @@
           <tr>
               <td>
                 <a href='{% url reports.views.detail report.machine.mac %}'>
-                  {{ report.machine.hostname }}
+                {% if report.machine.hostname %}
+                    {{ report.machine.hostname }}
+                {% else %}
+                    {{ report.machine.mac }}
+                {% endif %}
                 </a>
               </td>
               <td>{{ report.console_user }}</td>
