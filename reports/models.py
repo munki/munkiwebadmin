@@ -38,6 +38,12 @@ class MunkiReport(models.Model):
     report = models.TextField(editable=False, null=True)
     class Meta:
         ordering = ['machine']
+        
+    def hostname(self):
+        return self.machine.hostname
+        
+    def mac(self):
+        return self.machine.mac
     
     def encode(self, plist):
         string = plistlib.writePlistToString(plist)

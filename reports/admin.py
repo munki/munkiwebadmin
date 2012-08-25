@@ -6,7 +6,7 @@ class MachineAdmin(admin.ModelAdmin):
                     'last_inventory_update')
     
 class MunkiReportAdmin(admin.ModelAdmin):
-    list_diplay = ('machine', 'timestamp')
+    list_display = ('hostname', 'mac', 'timestamp', 'errors', 'warnings')
     
 admin.site.register(Machine, MachineAdmin)
 admin.site.register(MunkiReport, MunkiReportAdmin)
