@@ -65,7 +65,7 @@ def new(request):
 @permission_required('reports.change_machine', login_url='/login/')
 def delete(request, manifest_name=None):
     if request.method == 'POST':
-        #TODO: implement actual delete method
+        Manifest.delete(manifest_name, request.user)
         return HttpResponseRedirect('/manifest/')
     else:
         c = RequestContext(request, {'manifest_name': manifest_name})

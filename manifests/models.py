@@ -76,6 +76,51 @@ def git_add_and_commit(filepath, committer, action='modified'):
     return 0
 
 
+def git_delete_and_commit(filepath, committer):
+    if GIT and os.path.exists(filepath):
+        (directory, item) = os.path.split(filepath)
+        os.chdir(directory)
+        cmd = [GIT, 'rm',  item]
+        proc = subprocess.Popen(cmd, shell=False, bufsize=-1,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        (output, error) = proc.communicate()
+        if proc.returncode:
+            print "Could not remove % from git index:" % filepath
+            print error
+            return -1
+
+        manifests_path = os.path.join(REPO_DIR, 'manifests/')
+        if filepath.startswith(manifests_path):
+            itempath = filepath[len(manifests_path):]
+        else:
+            itempath = filepath
+
+        # set up GIT author info
+        author_name = (committer.first_name + ' ' + committer.last_name)
+        if author_name == ' ':
+            author_name = committer.username
+        author_email = (committer.email or '%s@munkiweb' % committer.username)
+        author_info = '%s <%s>' % (author_name, author_email)
+        commit_msg = ('%s deleted manifest \'%s\' via %s'
+                     % (author_name, itempath, APPNAME))
+        cmd = [GIT, 'commit', '-m', commit_msg, '--author', author_info]
+        proc = subprocess.Popen(cmd, shell=False, bufsize=-1,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        (output, error) = proc.communicate()
+        print output
+        print error
+        if proc.returncode:
+            print "Git commit of removal of %s failed" % filepath
+            print error
+            return -1
+        print "Committed something"
+    return 0
+
+
 def trimVersionString(version_string):
     ### from munkilib.updatecheck
     """Trims all lone trailing zeros in the version string after major/minor.
@@ -96,6 +141,13 @@ def trimVersionString(version_string):
 
 
 class Manifest(object):
+    @staticmethod
+    def __pathForManifestNamed(aManifestName):
+        '''Returns the path to a manifest given the manifest's name'''
+        return os.path.join(
+            REPO_DIR, 'manifests', aManifestName.replace(':', '/'))
+
+
     @classmethod
     def list(cls):
         '''Returns a list of available manifests'''
@@ -129,8 +181,7 @@ class Manifest(object):
     @classmethod
     def read(cls, manifest_name):
         '''Gets the contents of a manifest'''
-        manifest_path = os.path.join(
-            REPO_DIR, 'manifests', manifest_name.replace(':', '/'))
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
         if os.path.exists(manifest_path):
             try:
                 return plistlib.readPlist(manifest_path)
@@ -149,8 +200,7 @@ class Manifest(object):
             if user_list:
                 manifest[USERNAME_KEY] = user_list[0]
             del manifest['_user_name']
-        manifest_path = os.path.join(
-            REPO_DIR, 'manifests', manifest_name.replace(':', '/'))
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
         #try:
         #    prev_manifest = plistlib.readPlist(manifest_path)
         #except Exception:
@@ -161,8 +211,21 @@ class Manifest(object):
         except Exception, errmsg:
             pass
             # need to deal with errors
-            
-    
+
+
+    @classmethod
+    def delete(cls, manifest_name, committer):
+        '''Deletes a manifest from the disk'''
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
+        if os.path.exists(manifest_path):
+            try:
+                git_delete_and_commit(manifest_path, committer)
+            except Exception, errmsg:
+                print errmsg
+                pass
+                # need to deal with errors
+
+
     @classmethod
     def getValidInstallItems(cls, manifest_name):
         '''Returns a list of valid install item names for the
