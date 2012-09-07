@@ -117,7 +117,6 @@ def git_delete_and_commit(filepath, committer):
             print "Git commit of removal of %s failed" % filepath
             print error
             return -1
-        print "Committed something"
     return 0
 
 
