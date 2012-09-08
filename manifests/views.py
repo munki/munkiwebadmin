@@ -142,9 +142,6 @@ def index(request, manifest_name=None):
              'manifest_name': manifest_name,
              'manifest_user': username,
              'manifest': manifest,
-						 'show_add_control': request.user.has_perm('reports..machine.add_machine'),
-             'show_edit_controls':
-                 request.user.has_perm('reports.change_machine'),
              'user': request.user,
              'page': 'manifests'})
         
