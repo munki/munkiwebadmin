@@ -17,7 +17,7 @@
     window.catalogsTable =  $('#catalog_items').dataTable({
           "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
           "bPaginate": false,
-          "sScrollY": 480,
+          "sScrollY": 0,
           "bScrollCollapse": true,
           "bInfo": false,
           "bStateSave": true,
@@ -28,8 +28,7 @@
       });
 		sizeCatalogsTableToFit();
 		$(window).resize(function(){
-		  var settings = window.catalogsTable.fnSettings();
-			settings.oScroll.sY = sizeCatalogsTableToFit();
+			sizeCatalogsTableToFit();
 		});
       $('.dropdown-toggle').dropdown();
   } );

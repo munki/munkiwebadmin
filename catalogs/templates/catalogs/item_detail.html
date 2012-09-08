@@ -1,5 +1,15 @@
 <html>
 <head>
+<style type="text/css">
+td.prewrap, td.code {
+  white-space: pre-wrap;
+}
+
+td.code {
+  font-family: Andale Mono, monospace;
+  font-size: 9pt;
+}
+</style>
 </head>
 <body>
 <h3>{{ catalog_item.name }}-{{ catalog_item.version }}</h3>
@@ -10,7 +20,7 @@
 <tr><th scope="row">name</th><td>{{ catalog_item.name }}</td></tr>
 <tr><th scope="row">version</th><td>{{ catalog_item.version }}</td></tr>
 <tr><th scope="row">display_name</th><td>{{ catalog_item.display_name }}</td></tr>
-<tr><th scope="row">description</th><td>{{ catalog_item.description }}</td></tr>
+<tr><th scope="row">description</th><td class="prewrap">{{ catalog_item.description }}</td></tr>
 <tr><th scope="row">catalogs</th>
 <td>
 	{% for item in catalog_item.catalogs %}
@@ -26,9 +36,11 @@
 		<tr><th scope="row">{{ key }}</th>
 		{% if value.items %}
 			<td>{% include "catalogs/generic_dict.html" with generic_dict=value only %}</td>
-		{% else %}
+		{% else %}{% if "_script" in key %}
+      <td class="code">{{ value }}</td>
+    {% else %}
 			<td>{{ value }}</td>
-		{% endif %}
+		{% endif %}{% endif %}
 		</tr>
 	{% endif %}
 {% endfor %}

@@ -59,6 +59,7 @@ function deleteManifest() {
 function cleanDetailPane() {
   // unbind any existing event handlers for the detail pane
 	$('.editable').die('dblclick');
+	$('li.nameitem').die('dblclick');
 	$('.lineitem_delete').die('click');
 
 	// destroy sortability for existing elements
@@ -117,6 +118,9 @@ function makeEditableItems(manifest_name) {
 		$(this).replaceWith(item);
 	});
 	$('.lineitem').append("<a href='#' class='btn btn-danger btn-mini lineitem_delete'><i class='icon-minus icon-white'></i><a>");
+  $("li.nameitem").live('dblclick', function() {
+    console.log($(this).find('.editable').dblclick());
+  });
 	$('.editable').live('dblclick', function() {
 		makeEditableItem(manifest_name, $(this));
 	});
