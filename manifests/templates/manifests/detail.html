@@ -6,7 +6,7 @@
 	<h3 class="manifest_name" id="{{ manifest_name }}">
 	  {{ manifest_name }}
   	<div class='pull-right' id='save_and_cancel'>
-  	  {% if show_edit_controls %}
+  	  {% if perms.reports.change_machine %}
   		<input type='button' class='edit btn' value='Edit'></input>
   		{% endif %}
   	</div>

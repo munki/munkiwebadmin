@@ -5,6 +5,8 @@ from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 #from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import Permission
+from django.contrib.auth.models import User
 from django.conf import settings
 from django import forms
 
@@ -34,7 +36,7 @@ class NewManifestForm(forms.Form):
         
     
 @login_required
-@permission_required('reports.change_machine', login_url='/login/')
+@permission_required('reports.add_machine', login_url='/login/')
 def new(request):
     if request.method == 'POST': # If the form has been submitted...
         form = NewManifestForm(request.POST) # A form bound to the POST data
@@ -62,8 +64,10 @@ def new(request):
     
 
 @login_required
-@permission_required('reports.change_machine', login_url='/login/')
+@permission_required('reports.delete_machine', login_url='/login/')
 def delete(request, manifest_name=None):
+    if not request.user.has_perm('reports.delete_machine'):
+        return HttpResponse(json.dumps('error'))
     if request.method == 'POST':
         Manifest.delete(manifest_name, request.user)
         return HttpResponseRedirect('/manifest/')
@@ -138,6 +142,7 @@ def index(request, manifest_name=None):
              'manifest_name': manifest_name,
              'manifest_user': username,
              'manifest': manifest,
+						 'show_add_control': request.user.has_perm('reports..machine.add_machine'),
              'show_edit_controls':
                  request.user.has_perm('reports.change_machine'),
              'user': request.user,
@@ -211,6 +216,8 @@ def old_json_manifest_names(request):
 @login_required
 def detail(request, manifest_name):
     if request.method == 'POST':
+        if not request.user.has_perm('reports.change_machine'):
+            return HttpResponse(json.dumps('error'))
         if request.is_ajax():
             json_data = json.loads(request.raw_post_data)
             if json_data:
@@ -235,9 +242,6 @@ def detail(request, manifest_name):
             'valid_install_items': valid_install_items,
             'valid_catalogs': valid_catalogs,
             'valid_manifest_names': valid_manifest_names,
-            'user': request.user,
-            'show_edit_controls':
-                request.user.has_perm('reports.change_machine'),
             'user': request.user,
             'page': 'manifests'})
         c.update(csrf(request))
