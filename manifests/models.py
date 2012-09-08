@@ -77,7 +77,7 @@ class MunkiGit:
         elif statusOutput.find("deleted:") != -1:
             action = 'deleted'
         else:
-            action = 'did something'
+            action = 'did something with'
 
         # determine the path relative to REPO_DIR for the file at aPath
         manifests_path = os.path.join(REPO_DIR, 'manifests/')
