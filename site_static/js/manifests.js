@@ -24,8 +24,11 @@ $(document).ready(function(){
 
 	var sizeManifestsTableToFit = function()
 	{
+    var padding = $("#new_manifest").height();
+		padding = padding == 0 || padding == null ? $("#delete_manifest").height() : padding;
+		padding += 30;
 		var h = $(window).height()
-			- $("#manifest_list_table").offset().top - $("#new_manifest").height() - 30;
+			- $("#manifest_list_table").offset().top - padding;
 		window.manifestsTable.fnSettings().oScroll.sY = h;
 		window.manifestsTable.fnDraw(false);
 	};
