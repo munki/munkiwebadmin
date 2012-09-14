@@ -9,7 +9,34 @@
 
 {% block content %}
 {% load report_extras %}
+<script>
+  function get_warranty_status(serial) {
+	 $.ajaxSetup({
+	   beforeSend: function() {
+	     $('#warranty_status_checking').show();
+	     $('#warranty_status').hide();
+	   },
+	   complete: function(){
+		 $('#warranty_status_checking').hide();
+		 $('#warranty_status').show();
+	   },
+	   success: function() {}
+	 });
 
+    $.ajax({
+        url: '/report/warranty/' + serial,
+        type: 'GET',
+        dataType: 'html',
+        success: function(data, textStatus, xhr) {
+		  $('#warranty_status').html(data)
+        },
+        error: function(xhr, textStatus, errorThrown) {
+		  $('#warranty_status').html('Problem retrieving warranty status')
+        }
+    });
+  }
+
+</script>
 <div class="row-fluid">
 <div class="span1">
   <img  src='https://km.support.apple.com.edgekey.net/kb/securedImage.jsp?configcode={{machine.serial_number|slice:"8:" }}&size=72x72' />
@@ -60,6 +87,22 @@
               {{ report.MachineInfo.arch }}</td>
         </tr>
         {% endif %}
+        <tr>
+          <th>Warranty status:</th>
+          <td>
+            <span id='warranty_status_checking' style='display: none;'>
+              Checking warranty status 
+              <img src="{% get_static_prefix %}img/loading.gif" height="20" width="20"/>
+            </span>
+            <span id='warranty_status'>
+              <a href='javascript:void(0)' onclick="get_warranty_status('{{ machine.serial_number }}')">Click to check status</a>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <th>Estimated manufacture date:</th>
+          <td>{{ additional_info.manufacture_date }}</td>
+        </tr>
         <tr>
           <th>Free disk space:</th>
           <td>{{ report.AvailableDiskSpace|humanreadablesize  }}</td>
