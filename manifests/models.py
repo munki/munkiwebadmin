@@ -20,22 +20,19 @@ class MunkiGit:
     args = []
     results = {}
 
-
-    @classmethod
-    def __chdirToMatchPath(self, aPath):
+    @staticmethod
+    def __chdirToMatchPath(aPath):
         """Changes the current working directory to the same parent directory as
-				the file specified in aPath. Example:
-				"/Users/Shared/munki_repo/manifests/CoolManifest" would change
-				directories to "/Users/Shared/munki_repo/manifests" """
+        the file specified in aPath. Example:
+        "/Users/Shared/munki_repo/manifests/CoolManifest" would change
+        directories to "/Users/Shared/munki_repo/manifests" """
         os.chdir(os.path.dirname(aPath))
 
-
-    @classmethod
     def runGit(self, customArgs=None):
         """Executes the git command with the current set of arguments and
-				returns a dictionary with the keys 'output', 'error', and
-				'returncode'. You can optionally pass an array into customArgs to
-				override the self.args value without overwriting them."""
+        returns a dictionary with the keys 'output', 'error', and
+        'returncode'. You can optionally pass an array into customArgs to
+        override the self.args value without overwriting them."""
         customArgs = self.args if customArgs == None else customArgs
         proc = subprocess.Popen([self.cmd] + customArgs,
                                 shell=False,
@@ -44,27 +41,26 @@ class MunkiGit:
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
         (output, error) = proc.communicate()
-        self.results = {"output": output, "error": error, "returncode": proc.returncode}
+        self.results = {"output": output, 
+                       "error": error, "returncode": proc.returncode}
         return self.results
 
-
-    @classmethod
     def pathIsRepo(self, aPath):
+        """Returns True if the path is in a Git repo, false otherwise."""
         self.__chdirToMatchPath(aPath)
         self.runGit(['status', aPath])
         return self.results['returncode'] == 0
 
-
-    @classmethod
     def commitFileAtPathForCommitter(self, aPath, committer):
         """Commits the file at 'aPath'. This method will also automatically
-				generate the commit log appropriate for the status of aPath where status
-				would be 'modified', 'new file', or 'deleted'"""
+        generate the commit log appropriate for the status of aPath where status
+        would be 'modified', 'new file', or 'deleted'"""
         self.__chdirToMatchPath(aPath)
         # get the author information
         author_name = committer.first_name + ' ' + committer.last_name
         author_name = author_name if author_name != ' ' else committer.username
-        author_email = committer.email or "%s@munkiweb" % committer.username
+        author_email = (committer.email or 
+                        "%s@munkiwebadmin" % committer.username)
         author_info = '%s <%s>' % (author_name, author_email)
 
         # get the status of the file at aPath
@@ -80,11 +76,10 @@ class MunkiGit:
             action = 'did something with'
 
         # determine the path relative to REPO_DIR for the file at aPath
-        manifests_path = os.path.join(REPO_DIR, 'manifests/')
+        manifests_path = os.path.join(REPO_DIR, 'manifests')
         itempath = aPath
         if aPath.startswith(manifests_path):
             itempath = aPath[len(manifests_path):]
-
 
         # generate the log message
         log_msg = ('%s %s manifest \'%s\' via %s'
@@ -92,27 +87,23 @@ class MunkiGit:
         self.runGit(['commit', '-m', log_msg, '--author', author_info])
         if self.results['returncode'] != 0:
             print "Failed to commit changes to %s" % aPath
-            print results['error']
+            print self.results['error']
             return -1
         return 0
 
-
-    @classmethod
     def addFileAtPathForCommitter(self, aPath, aCommitter):
+        """Commits a file to the Git repo."""
         self.__chdirToMatchPath(aPath)
         self.runGit(['add', aPath])
         if self.results['returncode'] == 0:
             self.commitFileAtPathForCommitter(aPath, aCommitter)
 
-
-    @classmethod
     def deleteFileAtPathForCommitter(self, aPath, aCommitter):
+        """Deletes a file from the filesystem and Git repo."""
         self.__chdirToMatchPath(aPath)
         self.runGit(['rm', aPath])
         if self.results['returncode'] == 0:
             self.commitFileAtPathForCommitter(aPath, aCommitter)
-
-
 
 
 def trimVersionString(version_string):
