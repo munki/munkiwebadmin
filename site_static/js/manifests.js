@@ -21,16 +21,33 @@ $(document).ready(function(){
 	        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
 	    }
 	});
-	$('#manifest_list_table').dataTable({
+
+	var sizeManifestsTableToFit = function()
+	{
+    var padding = $("#new_manifest").height();
+		padding = padding == 0 || padding == null ? $("#delete_manifest").height() : padding;
+		padding += 30;
+		var h = $(window).height()
+			- $("#manifest_list_table").offset().top - padding;
+		window.manifestsTable.fnSettings().oScroll.sY = h;
+		window.manifestsTable.fnDraw(false);
+	};
+	window.manifestsTable = $('#manifest_list_table').dataTable({
     "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sScrollY": 0,
     "bPaginate": false,
-    "sScrollY": "480px",
     "bScrollCollapse": true,
     "bInfo": false,
     "bFilter": false,
     "bStateSave": true,
     "aaSorting": [[0,'asc']]
 });
+  sizeManifestsTableToFit();
+	$(window).resize(function(){
+		var settings = window.manifestsTable.fnSettings();
+		settings.oScroll.sY = sizeManifestsTableToFit();
+	});
+
 	$('a.manifest').click(function(){
 		var manifest_name = $(this).attr('id');
 		getManifestDetail(manifest_name);
@@ -45,6 +62,7 @@ function deleteManifest() {
 function cleanDetailPane() {
   // unbind any existing event handlers for the detail pane
 	$('.editable').die('dblclick');
+	$('li.nameitem').die('dblclick');
 	$('.lineitem_delete').die('click');
 
 	// destroy sortability for existing elements
@@ -103,6 +121,9 @@ function makeEditableItems(manifest_name) {
 		$(this).replaceWith(item);
 	});
 	$('.lineitem').append("<a href='#' class='btn btn-danger btn-mini lineitem_delete'><i class='icon-minus icon-white'></i><a>");
+  $("li.nameitem").live('dblclick', function() {
+    console.log($(this).find('.editable').dblclick());
+  });
 	$('.editable').live('dblclick', function() {
 		makeEditableItem(manifest_name, $(this));
 	});

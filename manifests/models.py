@@ -1,10 +1,9 @@
 #from django.db import models
 # we're not using a database for out manifests, so no need to import models
 import os
-import plistlib
 import subprocess
+import plistlib
 from catalogs.models import Catalog
-
 from django.conf import settings
 
 USERNAME_KEY = settings.MANIFEST_USERNAME_KEY
@@ -14,66 +13,106 @@ try:
     GIT = settings.GIT_PATH
 except:
     GIT = None
-    
 
-def is_git_repo(directory_path):
-    if GIT is None:
-        return False
-    try:
-        os.chdir(directory_path)
-    except OSError:
-        # directory doesn't exist or we don't have rights
-        return False
-    cmd = [GIT, 'status']
-    retcode = subprocess.call(cmd, shell=False, bufsize=-1,
-                              stdin=subprocess.PIPE,
-                              stdout=subprocess.PIPE, 
-                              stderr=subprocess.PIPE)
-    return (retcode == 0)
+class MunkiGit:
+    """A simple interface for some common interactions with the git binary"""
+    cmd = GIT
+    args = []
+    results = {}
 
 
-def git_add_and_commit(filepath, committer, action='modified'):
-    if GIT and os.path.exists(filepath):
-        (directory, item) = os.path.split(filepath)
-        os.chdir(directory)
-        cmd = [GIT, 'add', item]
-        proc = subprocess.Popen(cmd, shell=False, bufsize=-1,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, 
-                                stderr=subprocess.PIPE)
+    @classmethod
+    def __chdirToMatchPath(self, aPath):
+        """Changes the current working directory to the same parent directory as
+				the file specified in aPath. Example:
+				"/Users/Shared/munki_repo/manifests/CoolManifest" would change
+				directories to "/Users/Shared/munki_repo/manifests" """
+        os.chdir(os.path.dirname(aPath))
+
+
+    @classmethod
+    def runGit(self, customArgs=None):
+        """Executes the git command with the current set of arguments and
+				returns a dictionary with the keys 'output', 'error', and
+				'returncode'. You can optionally pass an array into customArgs to
+				override the self.args value without overwriting them."""
+        customArgs = self.args if customArgs == None else customArgs
+        proc = subprocess.Popen([self.cmd] + customArgs,
+                                shell=False,
+                                bufsize=-1,
+                                stdin = subprocess.PIPE,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE)
         (output, error) = proc.communicate()
-        if proc.returncode:
-            print >> sys.stderr, "Could not add %s to git index:" % filepath
-            print >> sys.stderr, error
-            return -1
-            
-        manifests_path = os.path.join(REPO_DIR, 'manifests/')
-        if filepath.startswith(manifests_path):
-            itempath = filepath[len(manifests_path):]
-        else:
-            itempath = filepath
-            
-        # set up GIT author info
-        author_name = (committer.first_name +  
-                       ' ' + committer.last_name)
-        if author_name == ' ':
-            author_name = committer.username
-        author_email = (committer.email or 
-                                   '%s@munkiweb' % committer.username)
+        self.results = {"output": output, "error": error, "returncode": proc.returncode}
+        return self.results
+
+
+    @classmethod
+    def pathIsRepo(self, aPath):
+        self.__chdirToMatchPath(aPath)
+        self.runGit(['status', aPath])
+        return self.results['returncode'] == 0
+
+
+    @classmethod
+    def commitFileAtPathForCommitter(self, aPath, committer):
+        """Commits the file at 'aPath'. This method will also automatically
+				generate the commit log appropriate for the status of aPath where status
+				would be 'modified', 'new file', or 'deleted'"""
+        self.__chdirToMatchPath(aPath)
+        # get the author information
+        author_name = committer.first_name + ' ' + committer.last_name
+        author_name = author_name if author_name != ' ' else committer.username
+        author_email = committer.email or "%s@munkiweb" % committer.username
         author_info = '%s <%s>' % (author_name, author_email)
-        commit_msg = ('%s %s manifest \'%s\' via %s' 
-                      % (author_name, action, itempath, APPNAME))
-        cmd = [GIT, 'commit', '-m', commit_msg, '--author', author_info]
-        proc = subprocess.Popen(cmd, shell=False, bufsize=-1,
-                                stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, 
-                                stderr=subprocess.PIPE)
-        (output, error) = proc.communicate()
-        if proc.returncode:
-            print "Git commit of changes to %s failed" % filepath
-            print error
+
+        # get the status of the file at aPath
+        statusResults = self.runGit(['status', aPath])
+        statusOutput = statusResults['output']
+        if statusOutput.find("new file:") != -1:
+            action = 'created'
+        elif statusOutput.find("modified:") != -1:
+            action = 'modified'
+        elif statusOutput.find("deleted:") != -1:
+            action = 'deleted'
+        else:
+            action = 'did something with'
+
+        # determine the path relative to REPO_DIR for the file at aPath
+        manifests_path = os.path.join(REPO_DIR, 'manifests/')
+        itempath = aPath
+        if aPath.startswith(manifests_path):
+            itempath = aPath[len(manifests_path):]
+
+
+        # generate the log message
+        log_msg = ('%s %s manifest \'%s\' via %s'
+                  % (author_name, action, itempath, APPNAME))
+        self.runGit(['commit', '-m', log_msg, '--author', author_info])
+        if self.results['returncode'] != 0:
+            print "Failed to commit changes to %s" % aPath
+            print results['error']
             return -1
-    return 0
+        return 0
+
+
+    @classmethod
+    def addFileAtPathForCommitter(self, aPath, aCommitter):
+        self.__chdirToMatchPath(aPath)
+        self.runGit(['add', aPath])
+        if self.results['returncode'] == 0:
+            self.commitFileAtPathForCommitter(aPath, aCommitter)
+
+
+    @classmethod
+    def deleteFileAtPathForCommitter(self, aPath, aCommitter):
+        self.__chdirToMatchPath(aPath)
+        self.runGit(['rm', aPath])
+        if self.results['returncode'] == 0:
+            self.commitFileAtPathForCommitter(aPath, aCommitter)
+
+
 
 
 def trimVersionString(version_string):
@@ -96,6 +135,13 @@ def trimVersionString(version_string):
 
 
 class Manifest(object):
+    @staticmethod
+    def __pathForManifestNamed(aManifestName):
+        '''Returns the path to a manifest given the manifest's name'''
+        return os.path.join(
+            REPO_DIR, 'manifests', aManifestName.replace(':', '/'))
+
+
     @classmethod
     def list(cls):
         '''Returns a list of available manifests'''
@@ -129,8 +175,7 @@ class Manifest(object):
     @classmethod
     def read(cls, manifest_name):
         '''Gets the contents of a manifest'''
-        manifest_path = os.path.join(
-            REPO_DIR, 'manifests', manifest_name.replace(':', '/'))
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
         if os.path.exists(manifest_path):
             try:
                 return plistlib.readPlist(manifest_path)
@@ -149,20 +194,36 @@ class Manifest(object):
             if user_list:
                 manifest[USERNAME_KEY] = user_list[0]
             del manifest['_user_name']
-        manifest_path = os.path.join(
-            REPO_DIR, 'manifests', manifest_name.replace(':', '/'))
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
         #try:
         #    prev_manifest = plistlib.readPlist(manifest_path)
         #except Exception:
         #    pass
         try:
             plistlib.writePlist(manifest, manifest_path)
-            git_add_and_commit(manifest_path, committer)
+            if GIT:
+                git = MunkiGit()
+                git.addFileAtPathForCommitter(manifest_path, committer)
         except Exception, errmsg:
             pass
             # need to deal with errors
-            
-    
+
+
+    @classmethod
+    def delete(cls, manifest_name, committer):
+        '''Deletes a manifest from the disk'''
+        manifest_path = cls.__pathForManifestNamed(manifest_name)
+        if not os.path.exists(manifest_path):
+            print "Unable to find manifest to delete '%s'" % manifest_path
+            return -1
+
+        if not GIT:
+            os.remove(manifest_path)
+        else:
+            git = MunkiGit()
+            git.deleteFileAtPathForCommitter(manifest_path, committer)
+
+
     @classmethod
     def getValidInstallItems(cls, manifest_name):
         '''Returns a list of valid install item names for the

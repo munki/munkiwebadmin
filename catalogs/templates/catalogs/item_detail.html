@@ -36,11 +36,19 @@ td.code {
 		<tr><th scope="row">{{ key }}</th>
 		{% if value.items %}
 			<td>{% include "catalogs/generic_dict.html" with generic_dict=value only %}</td>
+<<<<<<< HEAD
     {% else %}{% if "_script" in key %}
   		<td class="code">{{ value }}</td>
 		{% else %}
 			<td>{{ value }}</td>
     {% endif %}{% endif %}
+=======
+		{% else %}{% if "_script" in key %}
+      <td class="code">{{ value }}</td>
+    {% else %}
+			<td>{{ value }}</td>
+		{% endif %}{% endif %}
+>>>>>>> d005133939622aa3eec3305db58e2833fd5fe1ed
 		</tr>
 	{% endif %}
 {% endfor %}

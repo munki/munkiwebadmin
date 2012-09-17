@@ -8,10 +8,18 @@
 {% load static %}
 <script type='text/javascript'>
   $(document).ready(function() {
-      $('#catalog_items').dataTable({
+	  var sizeCatalogsTableToFit = function() {
+	    var h = $(window).height() - $("#catalog_items").offset().top - 30;
+		  window.catalogsTable.fnSettings().oScroll.sY = h;
+		  window.catalogsTable.fnDraw(false);
+		};
+		
+    window.catalogsTable =  $('#catalog_items').dataTable({
           "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
           "bPaginate": false,
-          "sScrollY": "480px",
+          "sScrollY": 0,
+					"sScrollX": "100%",
+					"bScrollCollapse": true,
           "bScrollCollapse": true,
           "bInfo": false,
           "bStateSave": true,
@@ -20,6 +28,10 @@
                 { "bSortable": false, "aTargets": [ 1 ] }
               ]
       });
+		sizeCatalogsTableToFit();
+		$(window).resize(function(){
+			sizeCatalogsTableToFit();
+		});
       $('.dropdown-toggle').dropdown();
   } );
 
