@@ -132,7 +132,6 @@ class Manifest(object):
         return os.path.join(
             REPO_DIR, 'manifests', aManifestName.replace(':', '/'))
 
-
     @classmethod
     def list(cls):
         '''Returns a list of available manifests'''
@@ -150,8 +149,7 @@ class Manifest(object):
                     continue
                 manifests.append(os.path.join(subdir, name).lstrip('/'))
         return manifests
-    
-    
+
     @classmethod
     def new(cls):
         '''Returns an empty manifest object'''
@@ -161,8 +159,7 @@ class Manifest(object):
                         'optional_installs']:
             manifest[section] = []
         return manifest
-    
-    
+
     @classmethod
     def read(cls, manifest_name):
         '''Gets the contents of a manifest'''
@@ -174,8 +171,7 @@ class Manifest(object):
                 return {}
         else:
             return {}
-            
-            
+
     @classmethod
     def write(cls, manifest_name, manifest, committer):
         '''Writes a changed manifest to disk'''
@@ -199,7 +195,6 @@ class Manifest(object):
             pass
             # need to deal with errors
 
-
     @classmethod
     def delete(cls, manifest_name, committer):
         '''Deletes a manifest from the disk'''
@@ -213,7 +208,6 @@ class Manifest(object):
         else:
             git = MunkiGit()
             git.deleteFileAtPathForCommitter(manifest_path, committer)
-
 
     @classmethod
     def getValidInstallItems(cls, manifest_name):
@@ -238,7 +232,6 @@ class Manifest(object):
             return list(install_items)
         return []
 
-
     @classmethod
     def getSuggestedInstallItems(cls, manifest_name):
         '''Returns a list of suggested install item names for the
@@ -254,11 +247,9 @@ class Manifest(object):
                     [item['name'] for item in catalog_items
                     if not item.get('update_for')]))
         return install_items
-                
-            
+
     @classmethod
     def findUserForManifest(cls, manifest_name):
         '''returns a username for a given manifest name'''
         if USERNAME_KEY:
             return cls.read(manifest_name).get(USERNAME_KEY, '')
-    
