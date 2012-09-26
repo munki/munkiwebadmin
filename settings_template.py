@@ -227,3 +227,5 @@ MANIFEST_USERNAME_KEY = 'user'
 # set MANIFEST_USERNAME_IS_EDITABLE to allow edits to the displayed username
 MANIFEST_USERNAME_IS_EDITABLE = False
 
+# enable WARRANTY to show warranty information on the detail machine report
+WARRANTY = False

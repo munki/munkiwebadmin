@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from models import Machine, MunkiReport
 
@@ -182,6 +183,12 @@ def detail(request, mac):
         report_plist['ManifestNameLink'] = report_plist[
                                             'ManifestName'].replace('/', ':')
 
+    # determine if the warranty lookup information should be shown
+    try:
+        WARRANTY = settings.WARRANTY
+    except:
+        WARRANTY = False
+
     # Determine Manufacture Date
     additional_info = {}
     if machine.serial_number:
@@ -246,6 +253,7 @@ def detail(request, mac):
                                'report': report_plist,
                                'user': request.user,
                                'additional_info': additional_info,
+                               'warranty': WARRANTY,
                                'page': 'reports'})
 
 
