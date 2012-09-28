@@ -1,8 +1,25 @@
 {% extends 'base.html' %}
+{% load munkiwebadmin_extras %}
 
 {% block extra_style %}
 {% load static %}
 <!--<link rel="stylesheet" href="{% get_static_prefix %}css/catalogs.css" type="text/css" media="all" />-->
+<style>
+.wraptext {
+	table-layout: fixed;
+	word-wrap: break-word;
+}
+
+.list {
+	list-style: none; 
+	padding: 0px; 
+	margin: 0px;
+}
+
+.listborder {
+	border-top: solid 1px #DDD;
+}
+</style>
 {% endblock extra_style %}
 {% block java_script %}
 {% load static %}
@@ -18,14 +35,13 @@
           "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
           "bPaginate": false,
           "sScrollY": 0,
-					"sScrollX": "100%",
-					"bScrollCollapse": true,
+          "sScrollX": "100%",
           "bScrollCollapse": true,
           "bInfo": false,
           "bStateSave": true,
           "aaSorting": [[0,'asc']],
           "aoColumnDefs": [ 
-                { "bSortable": false, "aTargets": [ 1 ] }
+                { "bSortable": false, "sWidth": "32%", "aTargets": [ 1 ] }
               ]
       });
 		sizeCatalogsTableToFit();
@@ -64,7 +80,7 @@
           </ul>
         </span></strong>
         </div>
-		    <table class="table table-striped table-condensed" id='catalog_items'>
+		    <table class="table table-striped table-condensed wraptext" id='catalog_items'>
 		      <thead>
 		        <tr><th>Name</th><th>Version</th></tr>
 		      </thead>
@@ -76,13 +92,22 @@
   			      {% with item_name.list|dictsortreversed:'version' as item_list %}
   			        <a href='#' onClick="getCatalogItem('{{ catalog_name }}', '{{ item_list.0.index }}', '{{ item_name.grouper }}', '{{ item_list.0.version }}')">
   			      {% endwith %}
-  				    {{ item_name.grouper }}</a>
+  				    {{ item_name.grouper|wrappable }}</a>
   			      </td>
   			      <td class='version'>
+  			        <ul class='list'>
   				      {% for item in item_name.list|dictsortreversed:'version' %}
-  					    <a href='#' onClick="getCatalogItem('{{ catalog_name }}', '{{ item.index }}', '{{ item_name.grouper }}', '{{ item.version }}')">
-  						  {{ item.version }}</a><br />
+						{% if forloop.counter0 == 0 %}
+  					      <li><a href='#' onClick="getCatalogItem('{{ catalog_name }}', '{{ item.index }}', '{{ item_name.grouper }}', '{{ item.version }}')">
+  						    {{ item.version|wrappable }}</a>
+  						  </li>
+  						 {% else %}
+  					      <li class='listborder'><a href='#' onClick="getCatalogItem('{{ catalog_name }}', '{{ item.index }}', '{{ item_name.grouper }}', '{{ item.version }}')">
+  						    {{ item.version|wrappable }}</a>
+  						  </li>
+  						 {% endif %}
   				      {% endfor %}
+  				    </ul>
   			      </td>
 			      </tr>
 		        {% endfor %}
