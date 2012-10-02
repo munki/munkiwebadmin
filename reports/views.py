@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 from models import Machine, MunkiReport
 
@@ -14,8 +15,9 @@ import base64
 import bz2
 import plistlib
 import re
-from datetime import datetime
-
+import urllib
+import urllib2
+from datetime import datetime, timedelta, date
 
 @csrf_exempt
 def submit(request, submission_type):
@@ -180,7 +182,19 @@ def detail(request, mac):
     if 'ManifestName' in report_plist:
         report_plist['ManifestNameLink'] = report_plist[
                                             'ManifestName'].replace('/', ':')
-            
+
+    # determine if the warranty lookup information should be shown
+    try:
+        WARRANTY = settings.WARRANTY
+    except:
+        WARRANTY = False
+
+    # Determine Manufacture Date
+    additional_info = {}
+    if machine.serial_number:
+        additional_info['manufacture_date'] = \
+            estimate_manufactured_date(machine.serial_number)
+              
     # handle items that were installed during the most recent run
     install_results = {}
     for result in report_plist.get('InstallResults', []):
@@ -238,6 +252,8 @@ def detail(request, mac):
                               {'machine': machine,
                                'report': report_plist,
                                'user': request.user,
+                               'additional_info': additional_info,
+                               'warranty': WARRANTY,
                                'page': 'reports'})
 
 
@@ -265,4 +281,84 @@ def raw(request, mac):
 
 def lookup_ip(request):
     return HttpResponse(request.META['REMOTE_ADDR'], mimetype='text/plain')
+
+def estimate_manufactured_date(serial):
+    """Estimates the week the machine was manfactured based off it's serial
+    number"""
+    # See http://www.macrumors.com/2010/04/16/apple-tweaks-serial-number
+    #      -format-with-new-macbook-pro/ for details about serial numbers
+    if len(serial) == 11:
+        year = serial[2]
+        est_year = 2000 + '   3456789012'.index(year)
+        week = serial[3:5]
+        return formatted_manafactured_date(int(est_year), int(week))
+    else:
+        year_code = 'cdfghjklmnpqrstvwxyz'
+        year = serial[3].lower()
+        est_year = 2010 + (year_code.index(year) / 2)
+        est_half = year_code.index(year) % 2
+        week_code = ' 123456789cdfghjklmnpqrtvwxy'
+        week = serial[4:5].lower()
+        est_week = week_code.index(week) + (est_half * 26)
+        return formatted_manafactured_date(int(est_year), int(est_week))
+
+def formatted_manafactured_date(year, week):
+    """Converts the manufactured year and week number into a nice string"""
+    # Based on accepted solution to this stackoverflow question
+    # http://stackoverflow.com/questions/5882405/get-date-from-iso-week
+    #  -number-in-python
+    ret = datetime.strptime('%04d-%02d-1' % (year, week), '%Y-%W-%w')
+    if date(year, 1, 4).isoweekday() > 4:
+        ret -= timedelta(days=7)
+
+    # Format Day
+    day = ret.strftime('%d')
+    if day == 1 or day == 11 or day == 21 or day == 31:
+        suffix = "st"
+    elif day == 2 or day == 12 or day == 22:
+        suffix = "nd"
+    elif day == 3 or day == 13 or day == 23:
+        suffix = "rd"
+    else:
+        suffix = "th"
     
+    # Build formatted date string
+    formatted_date = 'Week of %s %s %s' % \
+        (ret.strftime('%A'), day.lstrip('0') + suffix, ret.strftime('%B %Y'))
+    return formatted_date
+
+def warranty(request, serial):
+    """Determines the warranty status of a machine, and it's expiry date"""
+    # Based on: https://github.com/chilcote/warranty
+
+    url = 'https://selfsolve.apple.com/wcResults.do'
+    values = {'sn' : serial,
+              'Continue' : 'Continue',
+              'cn' : '',
+              'locale' : '',
+              'caller' : '',
+              'num' : '0' }
+
+    data = urllib.urlencode(values)
+    req = urllib2.Request(url, data)
+    response = urllib2.urlopen(req)
+    the_page = response.read()
+
+    match_obj = re.search( r'Repairs and Service Coverage: \w*', \
+                          the_page, re.M|re.I)
+    if match_obj:
+        if 'Active' in match_obj.group():
+            match_obj = re.search( r'Estimated Expiration Date: (.*)<br/>', \
+                                  the_page, re.M|re.I)
+            if match_obj:
+                expiry_date = match_obj.group()\
+                                      .strip('Estimated Expiration Date: ')
+                expiry_date = expiry_date.strip('<br/>')
+                return HttpResponse('<span style="color:green">Active</span>'\
+                    '<br/>Estimated Expiry Date: %s' % (expiry_date))
+            else:
+                return HttpResponse('<span style="color:green">Active</span>')
+        else:
+            return HttpResponse('<span>Expired</span>')
+    else:
+        return HttpResponse('<span>Expired</span>')

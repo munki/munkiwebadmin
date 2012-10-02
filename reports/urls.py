@@ -7,6 +7,7 @@ urlpatterns = patterns('reports.views',
     url(r'^detail/(?P<mac>[^/]+)$', 'detail'),
     url(r'^raw/(?P<mac>[^/]+)$', 'raw'),
     url(r'^submit/(?P<submission_type>[^/]+)$', 'submit'),
+    url(r'^warranty/(?P<serial>[^/]+)$', 'warranty'),
     # for compatibilty with MunkiReport scripts
     url(r'^ip$', 'lookup_ip'),
     url(r'^(?P<submission_type>[^/]+)$', 'submit'),
