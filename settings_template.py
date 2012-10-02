@@ -228,4 +228,4 @@ MANIFEST_USERNAME_KEY = 'user'
 MANIFEST_USERNAME_IS_EDITABLE = False
 
 # enable WARRANTY to show warranty information on the detail machine report
-WARRANTY = False
+WARRANTY_LOOKUP_ENABLED = False

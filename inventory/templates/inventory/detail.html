@@ -23,7 +23,12 @@
 </div>
   <div class="span10">
     <h2>{{ machine.hostname }}</h2>
-    <!--<h2><small>MacBook Air (13-inch, Mid 2011)</small><h2>-->
+    <p>
+      <a href='{% url reports.views.detail machine.mac %}'>Report</a> | <b>Inventory</b>
+      <span title="Last inventory date">
+			  :: {{ machine.last_inventory_update|date:"Y-m-d H:i" }}
+		  </span>
+    </p>
   </div>
 </div>
 
@@ -47,10 +52,6 @@
           <tr>
             <th>Last inventory date:</th>
             <td>{{ machine.last_inventory_update|date:"Y-m-d H:i" }}</td>
-          </tr>
-          <tr>
-            <th>Machine report:</th>
-            <td><a href='{% url reports.views.detail machine.mac %}'>Click here</a></td>
           </tr>
         </tbody>
       </table>

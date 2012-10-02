@@ -185,9 +185,9 @@ def detail(request, mac):
 
     # determine if the warranty lookup information should be shown
     try:
-        WARRANTY = settings.WARRANTY
+        WARRANTY_LOOKUP_ENABLED = settings.WARRANTY_LOOKUP_ENABLED
     except:
-        WARRANTY = False
+        WARRANTY_LOOKUP_ENABLED = False
 
     # Determine Manufacture Date
     additional_info = {}
@@ -253,7 +253,7 @@ def detail(request, mac):
                                'report': report_plist,
                                'user': request.user,
                                'additional_info': additional_info,
-                               'warranty': WARRANTY,
+                               'warranty_lookup_enabled': WARRANTY_LOOKUP_ENABLED,
                                'page': 'reports'})
 
 
