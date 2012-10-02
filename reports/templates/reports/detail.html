@@ -102,6 +102,21 @@
         </tr>
       </tbody>
     </table>
+    <h3>Inventory</h3>
+    <table class="client_info table table-condensed">
+      <tbody>
+        <tr>
+          <th>Inventory report:</th>
+          <td><a href='{% url inventory.views.detail machine.mac %}'>
+            Click here</a>
+          </td>
+        </tr>
+        <tr>
+          <th>Last inventory date:</th>
+          <td>{{ machine.last_inventory_update|date:"Y-m-d H:i" }}</td>
+        </tr>
+      </tbody>
+    </table>
     <!--<h3>Warranty</h3>
     <table class='table table-condensed'>
       <tbody>
