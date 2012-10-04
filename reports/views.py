@@ -313,14 +313,10 @@ def formatted_manafactured_date(year, week):
 
     # Format Day
     day = ret.strftime('%d')
-    if day == 1 or day == 11 or day == 21 or day == 31:
-        suffix = "st"
-    elif day == 2 or day == 12 or day == 22:
-        suffix = "nd"
-    elif day == 3 or day == 13 or day == 23:
-        suffix = "rd"
-    else:
+    if 4 <= int(day) <= 20 or 24 <= int(day) <= 30:
         suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][int(day) % 10 - 1]
     
     # Build formatted date string
     formatted_date = 'Week of %s %s %s' % \
