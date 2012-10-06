@@ -18,6 +18,7 @@ import re
 import urllib
 import urllib2
 from datetime import datetime, timedelta, date
+from xml.etree import ElementTree
 
 @csrf_exempt
 def submit(request, submission_type):
@@ -189,11 +190,22 @@ def detail(request, mac):
     except:
         WARRANTY_LOOKUP_ENABLED = False
 
+    # determine if the model description information should be shown
+    try:
+        MODEL_LOOKUP_ENABLED = settings.MODEL_LOOKUP_ENABLED
+    except:
+        MODEL_LOOKUP_ENABLED = False
+
     # Determine Manufacture Date
     additional_info = {}
     if machine.serial_number:
         additional_info['manufacture_date'] = \
             estimate_manufactured_date(machine.serial_number)
+
+    # If enabled lookup the model description
+    if MODEL_LOOKUP_ENABLED and machine.serial_number:
+        additional_info['model_description'] = \
+            model_description_lookup(machine.serial_number)
               
     # handle items that were installed during the most recent run
     install_results = {}
@@ -254,6 +266,7 @@ def detail(request, mac):
                                'user': request.user,
                                'additional_info': additional_info,
                                'warranty_lookup_enabled': WARRANTY_LOOKUP_ENABLED,
+                               'model_lookup_enabled': MODEL_LOOKUP_ENABLED,
                                'page': 'reports'})
 
 
@@ -375,3 +388,18 @@ def warranty(request, serial):
             return HttpResponse('<span>Unknown Status: Try clicking '\
                 '<a href="javascript:postwith(\'%s\',%s)">here</a> to '\
                 ' manually check' % (url, values))
+
+def model_description_lookup(serial):
+    """Determines the models human readable description based off the serial 
+    number"""
+    # Based off https://github.com/MagerValp/MacModelShelf/
+    
+    snippet = serial[-3:]
+    if (len(serial) == 12):
+        snippet = serial[-4:]
+    try:
+        response = urllib2.urlopen("http://support-sp.apple.com/sp/product?cc=%s&lang=en_US" % snippet, timeout=2)
+        et = ElementTree.parse(response)
+        return et.findtext("configCode").decode("utf-8")
+    except:
+        return ''

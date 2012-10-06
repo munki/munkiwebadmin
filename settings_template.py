@@ -229,3 +229,7 @@ MANIFEST_USERNAME_IS_EDITABLE = False
 
 # enable WARRANTY to show warranty information on the detail machine report
 WARRANTY_LOOKUP_ENABLED = False
+
+# enable MODEL_LOOKUP_ENABLED to show a human readable version of the machines 
+# model
+MODEL_LOOKUP_ENABLED = False
