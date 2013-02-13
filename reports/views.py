@@ -58,8 +58,10 @@ def submit(request, submission_type):
             # extract machine data from the report
             report_data = report.get_report()
             if 'MachineInfo' in report_data:
-                machine.os_version = report_data['MachineInfo'].get('os_vers')
-                machine.cpu_arch = report_data['MachineInfo'].get('arch')
+                machine.os_version = report_data['MachineInfo'].get(
+                    'os_vers', 'UNKNOWN')
+                machine.cpu_arch = report_data['MachineInfo'].get(
+                    'arch', 'UNKNOWN')
             machine.available_disk_space = \
                 report_data.get('AvailableDiskSpace') or 0
             hwinfo = {}
@@ -312,7 +314,7 @@ def formatted_manafactured_date(year, week):
         ret -= timedelta(days=7)
 
     # Format Day
-    day = ret.strftime('%d')
+    day = int(ret.strftime('%d'))
     if day == 1 or day == 11 or day == 21 or day == 31:
         suffix = "st"
     elif day == 2 or day == 12 or day == 22:
