@@ -40,7 +40,9 @@ curl --max-time 30 --silent \
     
 
 if [ -e "$INVENTORYPATH" ] ; then
-    INVENTORY_CHECKSUM=`cat /Library/Managed\ Installs/ApplicationInventory.plist | openssl dgst -sha256`
+    #INVENTORY_CHECKSUM=`cat /Library/Managed\ Installs/ApplicationInventory.plist | openssl dgst -sha256`
+    # Above doesn't work on Leopard. So let's call Python.
+    INVENTORY_CHECKSUM=`/usr/bin/python -c 'import hashlib; f = open("/Library/Managed Installs/ApplicationInventory.plist").read(); print hashlib.sha256(f).hexdigest()'`
     STORED_CHECKSUM=`curl --max-time 30 --silent "$INVENTORYHASHURL/$MAC"`
     if [ "$INVENTORY_CHECKSUM" != "$STORED_CHECKSUM" ]; then 
         # inventory changed, sumbit to server
