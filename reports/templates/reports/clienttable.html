@@ -1,3 +1,10 @@
+{% block java_script %}
+<script type="text/javascript" charset="utf-8">
+    // Auto-refresh the page after 5 minutes
+    window.setTimeout(function(){location.reload(true)}, 1000*60*5);
+</script>
+{% endblock %}
+
 {% if list_title %}
   <h3>{{ list_title }} <span class='badge badge-info'>{{ report_list|length }}</span></h3>
 {% endif %}
