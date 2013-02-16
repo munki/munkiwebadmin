@@ -193,7 +193,7 @@ def detail(request, mac):
 
     # Determine Manufacture Date
     additional_info = {}
-    if machine.serial_number:
+    if WARRANTY_LOOKUP_ENABLED and machine.serial_number:
         additional_info['manufacture_date'] = \
             estimate_manufactured_date(machine.serial_number)
               
