@@ -315,14 +315,10 @@ def formatted_manafactured_date(year, week):
 
     # Format Day
     day = ret.strftime('%d')
-    if day == 1 or day == 11 or day == 21 or day == 31:
-        suffix = "st"
-    elif day == 2 or day == 12 or day == 22:
-        suffix = "nd"
-    elif day == 3 or day == 13 or day == 23:
-        suffix = "rd"
-    else:
+    if 4 <= int(day) <= 20 or 24 <= int(day) <= 30:
         suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][int(day) % 10 - 1]
     
     # Build formatted date string
     formatted_date = 'Week of %s %s %s' % \
@@ -334,7 +330,7 @@ def warranty(request, serial):
     # Based on: https://github.com/chilcote/warranty
 
     url = 'https://selfsolve.apple.com/wcResults.do'
-    values = {'sn' : serial,
+    values = {'sn' : str(serial),
               'Continue' : 'Continue',
               'cn' : '',
               'locale' : '',
@@ -346,21 +342,38 @@ def warranty(request, serial):
     response = urllib2.urlopen(req)
     the_page = response.read()
 
-    match_obj = re.search( r'Repairs and Service Coverage: \w*', \
+    match_obj = re.search( r'Repairs and Service Coverage: (.*)<br/>', \
                           the_page, re.M|re.I)
     if match_obj:
         if 'Active' in match_obj.group():
             match_obj = re.search( r'Estimated Expiration Date: (.*)<br/>', \
-                                  the_page, re.M|re.I)
+                                  match_obj.group(), re.M|re.I)
             if match_obj:
-                expiry_date = match_obj.group()\
-                                      .strip('Estimated Expiration Date: ')
-                expiry_date = expiry_date.strip('<br/>')
+                expiry_date = match_obj.group().strip('<br/>')
                 return HttpResponse('<span style="color:green">Active</span>'\
-                    '<br/>Estimated Expiry Date: %s' % (expiry_date))
+                    '<br/>%s<br/><a href="javascript:postwith(\'%s\',%s)">'\
+                    'More Information</a>' % (expiry_date, url, values))
             else:
-                return HttpResponse('<span style="color:green">Active</span>')
+                return HttpResponse('<span style="color:green">Active</span>'\
+                    '<br/><a href="javascript:postwith(\'%s\',%s)">'\
+                    'More Information</a>' % (expiry_date, url, values))
+        elif 'Expired' in match_obj.group(): 
+            return HttpResponse('<span>Expired</span>'
+                '<br/><a href="javascript:postwith(\'%s\',%s)">'\
+                'More Information</a>' % (url, values))
+            
         else:
-            return HttpResponse('<span>Expired</span>')
+            return HttpResponse('<span>Unknown Status: Try clicking '
+                '<a href="javascript:postwith(\'%s\',%s)">here</a> to '
+                'manually check' % (url, values))
     else:
-        return HttpResponse('<span>Expired</span>')
+        match_obj = re.search( r'RegisterProduct.do\?productRegister', \
+                                  the_page, re.M|re.I)
+        if match_obj:
+            return HttpResponse('<span>Product Requires Validation<br/>'\
+                'Click <a href="javascript:postwith(\'%s\',%s)">here</a> '\
+                'for more information' % (url, values))
+        else:
+            return HttpResponse('<span>Unknown Status: Try clicking '\
+                '<a href="javascript:postwith(\'%s\',%s)">here</a> to '\
+                ' manually check' % (url, values))
