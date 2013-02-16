@@ -314,7 +314,7 @@ def formatted_manafactured_date(year, week):
         ret -= timedelta(days=7)
 
     # Format Day
-    day = int(ret.strftime('%d'))
+    day = ret.strftime('%d')
     if day == 1 or day == 11 or day == 21 or day == 31:
         suffix = "st"
     elif day == 2 or day == 12 or day == 22:
