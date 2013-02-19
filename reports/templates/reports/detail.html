@@ -61,6 +61,9 @@
 </div>
   <div class="span10">
     <h2>{{ machine.hostname }}</h2>
+	{% if model_lookup_enabled and additional_info.model_description|length > 1 %}
+	  <h3><small>{{ additional_info.model_description }}</small></h3>
+	{% endif %}
     <p>
       <b>Report</b> | <a href='{% url inventory.views.detail machine.mac %}'>Inventory</a>
       <span title="Last inventory date">
