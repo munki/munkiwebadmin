@@ -20,6 +20,22 @@ import urllib2
 from datetime import datetime, timedelta, date
 from xml.etree import ElementTree
 
+# Configure URLLIB2 to use a proxy. 
+try:
+    PROXY_ADDRESS = settings.PROXY_ADDRESS
+except:
+    PROXY_ADDRESS = ""
+
+proxies = {
+    "http":  PROXY_ADDRESS, 
+    "https": PROXY_ADDRESS
+}
+
+if PROXY_ADDRESS:
+    proxy = urllib2.ProxyHandler(proxies)
+    opener = urllib2.build_opener(proxy)
+    urllib2.install_opener(opener)
+
 @csrf_exempt
 def submit(request, submission_type):
     if request.method != 'POST':

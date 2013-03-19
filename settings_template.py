@@ -233,3 +233,9 @@ WARRANTY_LOOKUP_ENABLED = False
 # enable MODEL_LOOKUP_ENABLED to show a human readable version of the machines 
 # model
 MODEL_LOOKUP_ENABLED = False
+
+# if MunkiWebAdmin is behind a proxy, and WARRANTY_LOOKUP_ENABLED or
+# MODEL_LOOKUP_ENABLED are enabled, enter the details for the proxy server in
+# the format user:password@example.com:port (user:password@ and :port are 
+# optional), otherwise leave blank
+PROXY_ADDRESS = ""
