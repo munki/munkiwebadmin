@@ -71,7 +71,7 @@ def submit(request, submission_type):
             report.runstate = u"done"
             if 'base64bz2report' in submit:
                 report.update_report(submit.get('base64bz2report'))
-            report.save()
+
             # extract machine data from the report
             report_data = report.get_report()
             if 'MachineInfo' in report_data:
@@ -95,6 +95,7 @@ def submit(request, submission_type):
                 machine.serial_number = hwinfo.get('serial_number')
             
             machine.save()
+            report.save()
             return HttpResponse("Postflight report submmitted for %s.\n" 
                                  % submit.get('name'))
         
@@ -102,8 +103,8 @@ def submit(request, submission_type):
             report.runstate = u"in progress"
             report.activity = report.encode(
                 {"Updating": "preflight"})
-            report.save()
             machine.save()
+            report.save()
             return HttpResponse(
                 "Preflight report submmitted for %s.\n" %
                  submit.get('name'))
@@ -113,8 +114,8 @@ def submit(request, submission_type):
             report.report = None
             report.errors = 1
             report.warnings = 0
-            report.save()
             machine.save()
+            report.save()
             return HttpResponse(
                 "Broken client report submmitted for %s.\n" %
                  submit.get('name'))
