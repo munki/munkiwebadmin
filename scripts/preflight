@@ -1,30 +1,25 @@
 #!/bin/bash
-
-BASEURL="http://localhost:8000"
-SUBMITURL="${BASEURL}/update"
-LOOKUPURL="${BASEURL}/lookup/ip"
+source "`dirname "${0}"`/munkiwebadmin-config"
+SUBMITURL="${MWA_HOST}/update"
+LOOKUPURL="${MWA_HOST}/lookup/ip"
 
 RUNTYPE="$1"
 MAC=`ifconfig en0 | awk '$1=="ether" {print $2}'`
 NAME=`/usr/sbin/scutil --get ComputerName`
 
-# Enter a list of networks where Munki runs are allowed.
-ALLOWED_PREFIXES=( )
-# To skip the network check, set ALLOWED_PREFIXES to an empty list:
-#ALLOWED_PREFIXES=( )
 
 if [ "$RUNTYPE" == "custom" -o "$RUNTYPE" == "auto" ]; then
-    if [ ! -z "$ALLOWED_PREFIXES" ]; then
+    if [ ! -z "$MWA_ALLOWED_NETWORKS" ]; then
         echo "Checking network"
         
-        external_ip=`curl --max-time 5 --silent --fail "${LOOKUPURL}"`
+        external_ip=`mwa_curl --max-time 5 --fail "${LOOKUPURL}"`
         if [ $? -ne 0 ]; then
             echo "External IP lookup failed, aborting munki run"
             exit 1
         fi
         
         prefix_ok="no"
-        for prefix in ${ALLOWED_PREFIXES[@]}; do
+        for prefix in ${MWA_ALLOWED_NETWORKS[@]}; do
             echo -n "Checking $prefix for IP address $external_ip"
             prefix_len=$( echo `echo "$prefix" | tr . '\012' | wc -l` )
             for (( i=$prefix_len ; i<4 ; i++ )); do
@@ -48,7 +43,7 @@ if [ "$RUNTYPE" == "custom" -o "$RUNTYPE" == "auto" ]; then
     fi
 fi
 
-curl --max-time 5 --silent \
+mwa_curl --max-time 5 \
     -d runtype="$RUNTYPE" \
     -d mac="$MAC" \
     -d name="$NAME" \

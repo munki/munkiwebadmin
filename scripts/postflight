@@ -1,9 +1,9 @@
 #!/bin/bash
+source "`dirname "${0}"`/munkiwebadmin-config"
 
-BASEURL="http://localhost:8000"
-REPORTSUBMITURL="$BASEURL/update"
-INVENTORYHASHURL="$BASEURL/inventory/hash"
-INVENTORYSUBMITURL="$BASEURL/inventory/submit"
+REPORTSUBMITURL="${MWA_HOST}/update"
+INVENTORYHASHURL="${MWA_HOST}/inventory/hash"
+INVENTORYSUBMITURL="$MWA_HOST}/inventory/submit"
 
 RUNTYPE="$1"
 MAC=`ifconfig en0 | awk '$1=="ether" {print $2}'`
@@ -31,7 +31,7 @@ echo -n "base64bz2report=" > "$REPORTTMP"
 bzip2 --best < "$TMPPLIST" | openssl base64 >> "$REPORTTMP"
 
 # Submit Munki report to server.
-curl --max-time 30 --silent \
+mwa_curl --max-time 30 \
     -d runtype="$RUNTYPE" \
     -d mac="$MAC" \
     -d name="$NAME" \
@@ -43,7 +43,7 @@ if [ -e "$INVENTORYPATH" ] ; then
     #INVENTORY_CHECKSUM=`cat /Library/Managed\ Installs/ApplicationInventory.plist | openssl dgst -sha256`
     # Above doesn't work on Leopard. So let's call Python.
     INVENTORY_CHECKSUM=`/usr/bin/python -c 'import hashlib; f = open("/Library/Managed Installs/ApplicationInventory.plist").read(); print hashlib.sha256(f).hexdigest()'`
-    STORED_CHECKSUM=`curl --max-time 30 --silent "$INVENTORYHASHURL/$MAC"`
+    STORED_CHECKSUM=`mwa_curl --max-time 30 "$INVENTORYHASHURL/$MAC"`
     if [ "$INVENTORY_CHECKSUM" != "$STORED_CHECKSUM" ]; then 
         # inventory changed, sumbit to server
         # Compress and encode inventory.
@@ -51,7 +51,7 @@ if [ -e "$INVENTORYPATH" ] ; then
         echo -n "base64bz2inventory=" > "$INVENTORYTMP"
         bzip2 --best < "$INVENTORYPATH" | openssl base64 >> "$INVENTORYTMP"
         # Submit inventory to server.
-        curl --max-time 30 --silent \
+        mwa_curl --max-time 30 \
             -d runtype="$RUNTYPE" \
             -d mac="$MAC" \
             -d hostname="$NAME" \
