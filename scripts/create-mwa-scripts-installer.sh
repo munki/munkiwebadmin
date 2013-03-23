@@ -44,8 +44,8 @@ MWA_CERT_FILE=""
 # Ask the admin for the MWA_HOST and test with curl to make sure it's reachable
 while [ -z "${MWA_HOST}" ]; do
 	read -p "Enter the FQDN of your MWA server: " MWA_HOST
-	/usr/bin/curl --max-time 5 -I -L --silent --insecure "${MWA_HOST}/lookup/ip" > /dev/null
-	if [ $? != 0 ]; then
+	/usr/bin/curl --max-time 5 -I -L --silent --insecure "${MWA_HOST}/lookup/ip" | grep "404 Not Found" > /dev/null
+	if [ $? == 0 ]; then
 		read -p "   MWA install not detected! Continue anyway? [y/N] " USE_UNREACHABLE_HOST
 		if [ "${USE_UNREACHABLE_HOST}" == "y" ]; then
 			break
