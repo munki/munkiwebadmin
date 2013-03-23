@@ -148,6 +148,7 @@ if [ ! -z $MWA_CERT_FILE ];then
 	fi
 fi
 rm -rf "${BUILD_DIR}"
+rm -rf "${SCRIPTS_DIR}"
 
 echo
 echo "Finished building munkiwebadmin_scripts-${BUNDLE_VERSION}.pkg"
