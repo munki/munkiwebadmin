@@ -3,7 +3,7 @@ source "`dirname "${0}"`/munkiwebadmin-config"
 
 REPORTSUBMITURL="${MWA_HOST}/update"
 INVENTORYHASHURL="${MWA_HOST}/inventory/hash"
-INVENTORYSUBMITURL="$MWA_HOST}/inventory/submit"
+INVENTORYSUBMITURL="${MWA_HOST}/inventory/submit"
 
 RUNTYPE="$1"
 MAC=`ifconfig en0 | awk '$1=="ether" {print $2}'`
