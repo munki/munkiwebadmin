@@ -100,9 +100,19 @@ done
 
 # inject the data collected from the admin into the config file
 BUILD_CONF="${BUILD_DIR}/usr/local/munki/munkiwebadmin-config"
-CERTFILE="/usr/local/munki/`basename \"${MWA_CERT_FILE}\"`"
-/usr/bin/sed -i '' -e "s|^MWA_HOST=.*$|MWA_HOST=\"$MWA_HOST\"|" "${BUILD_CONF}"
+
+# Appropriately set the value of MWA_SSL_CERTIFICATE
+if [ -e "${MWA_CERT_FILE}" ]; then
+	CERTFILE="/usr/local/munki/`basename \"${MWA_CERT_FILE}\"`"
+else
+	CERTFILE=""
+fi
+
+# write the certificate value, if any
 /usr/bin/sed -i '' -e "s|^MWA_SSL_CERTIFICATE=.*$|MWA_SSL_CERTIFICATE=\"${CERTFILE}\"|" "${BUILD_CONF}"
+# write the MWA host name
+/usr/bin/sed -i '' -e "s|^MWA_HOST=.*$|MWA_HOST=\"$MWA_HOST\"|" "${BUILD_CONF}"
+# write the allowed networks array
 /usr/bin/sed -i '' -e "s|^MWA_ALLOWED_NETWORKS=.*$|MWA_ALLOWED_NETWORKS=( $MWA_ALLOWED_NETWORKS )|" "${BUILD_CONF}"
 
 # Create a postflight script to fix permissions
