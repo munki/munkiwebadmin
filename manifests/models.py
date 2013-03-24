@@ -137,7 +137,7 @@ class Manifest(object):
         '''Returns a list of available manifests'''
         manifests_path = os.path.join(REPO_DIR, 'manifests')
         manifests = []
-        skipdirs = ['.svn', '.git']
+        skipdirs = ['.svn', '.git', '.AppleDouble']
         for dirpath, dirnames, filenames in os.walk(manifests_path):
             for skipdir in skipdirs:
                 if skipdir in dirnames:
