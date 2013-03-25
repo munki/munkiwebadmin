@@ -88,11 +88,11 @@ def submit(request, submission_type):
                         hwinfo = profile._items[0]
                         break
             if hwinfo:
-                machine.machine_model = hwinfo.get('machine_model')
-                machine.cpu_type = hwinfo.get('cpu_type')
-                machine.cpu_speed = hwinfo.get('current_processor_speed')
-                machine.ram = hwinfo.get('physical_memory')
-                machine.serial_number = hwinfo.get('serial_number')
+                machine.machine_model = hwinfo.get('machine_model') and hwinfo.get('machine_model') or u'unknown'
+                machine.cpu_type = hwinfo.get('cpu_type') and hwinfo.get('cpu_type') or u'unknown'
+                machine.cpu_speed = hwinfo.get('current_processor_speed') and hwinfo.get('current_processor_speed') or u'0'
+                machine.ram = hwinfo.get('physical_memory') and hwinfo.get('physical_memory') or u'0'
+                machine.serial_number = hwinfo.get('serial_number') and hwinfo.get('serial_number')[0:15] or u'unknown'
             
             machine.save()
             report.save()
