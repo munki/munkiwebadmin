@@ -11,10 +11,10 @@ class Machine(models.Model):
     username = models.CharField(max_length=256)
     location = models.CharField(max_length=256)
     remote_ip = models.CharField(max_length=15)
-    machine_model = models.CharField(max_length=64)
-    cpu_type = models.CharField(max_length=64)
-    cpu_speed = models.CharField(max_length=32)
-    cpu_arch = models.CharField(max_length=32)
+    machine_model = models.CharField(max_length=64, blank=True, default="vitual-machine")
+    cpu_type = models.CharField(max_length=64, blank=True)
+    cpu_speed = models.CharField(max_length=32, blank=True)
+    cpu_arch = models.CharField(max_length=32, blank=True)
     ram = models.CharField(max_length=16)
     os_version = models.CharField(max_length=16)
     available_disk_space = models.IntegerField(default=0)
@@ -57,12 +57,15 @@ class MunkiReport(models.Model):
         try:
             plist = plistlib.readPlistFromString(data)
             return plist
-        except ExpatError:
+        except:
             try:
                 plist = plistlib.readPlistFromString(data.encode('UTF-8'))
                 return plist
-            except ExpatError:
-                return self.b64bz_decode(data)
+            except:
+                try:
+                    return self.b64bz_decode(data)
+                except:
+                    return dict()
         
     def b64bz_decode(self, data):
         try:
