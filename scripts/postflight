@@ -34,7 +34,7 @@ bzip2 --best < "$TMPPLIST" | openssl base64 >> "$REPORTTMP"
 mwa_curl --max-time 30 \
     -d runtype="$RUNTYPE" \
     -d mac="$MAC" \
-    -d name="$NAME" \
+    -d name=\""$NAME"\" \
     -d "@$REPORTTMP" \
     "$REPORTSUBMITURL/postflight"
     
@@ -54,7 +54,7 @@ if [ -e "$INVENTORYPATH" ] ; then
         mwa_curl --max-time 30 \
             -d runtype="$RUNTYPE" \
             -d mac="$MAC" \
-            -d hostname="$NAME" \
+            -d hostname=\""$NAME"\" \
             -d "@$INVENTORYTMP" \
             "$INVENTORYSUBMITURL"
         # clean up

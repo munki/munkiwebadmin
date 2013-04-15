@@ -46,7 +46,7 @@ fi
 mwa_curl --max-time 5 \
     -d runtype="$RUNTYPE" \
     -d mac="$MAC" \
-    -d name="$NAME" \
+    -d name=\""$NAME"\" \
     "$SUBMITURL/preflight"
 
 exit 0

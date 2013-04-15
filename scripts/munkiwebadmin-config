@@ -47,5 +47,5 @@ function mwa_curl
 	do
 		paramList="${paramList} ${_param_}"
 	done
-	/usr/bin/curl$paramList
+	/bin/bash -c "/usr/bin/curl$paramList"
 }
