@@ -110,7 +110,8 @@ def inventory_hash(request, mac):
         raise Http404
     return HttpResponse(sha256hash)
     
-    
+
+@login_required
 def index(request):
     all_machines = Machine.objects.all()
     return render_to_response('inventory/index.html',
@@ -119,6 +120,7 @@ def index(request):
                                'page': 'inventory'})
 
 
+@login_required
 def detail(request, mac):
     machine = None
     if mac:
@@ -158,6 +160,7 @@ def detail(request, mac):
                               'page': 'inventory'})
 
 
+@login_required
 def items(request):
     name = request.GET.get('name')
     version = request.GET.get('version')
