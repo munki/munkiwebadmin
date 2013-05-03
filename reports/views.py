@@ -320,25 +320,37 @@ def estimate_manufactured_date(serial):
     # See http://www.macrumors.com/2010/04/16/apple-tweaks-serial-number
     #      -format-with-new-macbook-pro/ for details about serial numbers
     if len(serial) == 11:
-        year = serial[2]
-        est_year = 2000 + '   3456789012'.index(year)
-        week = serial[3:5]
-        return formatted_manafactured_date(int(est_year), int(week))
+        try:
+            year = serial[2]
+            est_year = 2000 + '   3456789012'.index(year)
+            week = serial[3:5]
+            return formatted_manafactured_date(int(est_year), int(week))
+        except:
+            return 'Unknown'    
+    elif len(serial) == 12:
+        try:
+			year_code = 'cdfghjklmnpqrstvwxyz'
+			year = serial[3].lower()
+			est_year = 2010 + (year_code.index(year) / 2)
+			est_half = year_code.index(year) % 2
+			week_code = ' 123456789cdfghjklmnpqrtvwxy'
+			week = serial[4:5].lower()
+			est_week = week_code.index(week) + (est_half * 26)
+			return formatted_manafactured_date(int(est_year), int(est_week))
+        except:
+            return 'Unknown'    
     else:
-        year_code = 'cdfghjklmnpqrstvwxyz'
-        year = serial[3].lower()
-        est_year = 2010 + (year_code.index(year) / 2)
-        est_half = year_code.index(year) % 2
-        week_code = ' 123456789cdfghjklmnpqrtvwxy'
-        week = serial[4:5].lower()
-        est_week = week_code.index(week) + (est_half * 26)
-        return formatted_manafactured_date(int(est_year), int(est_week))
-
+        return 'Unknown'
+        
 def formatted_manafactured_date(year, week):
     """Converts the manufactured year and week number into a nice string"""
     # Based on accepted solution to this stackoverflow question
     # http://stackoverflow.com/questions/5882405/get-date-from-iso-week
     #  -number-in-python
+
+    if not isinstance(year, int) or not isinstance(week, int):
+        return 'Unknown'
+
     ret = datetime.strptime('%04d-%02d-1' % (year, week), '%Y-%W-%w')
     if date(year, 1, 4).isoweekday() > 4:
         ret -= timedelta(days=7)
