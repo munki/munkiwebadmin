@@ -164,16 +164,30 @@ def detail(request, mac):
 def items(request):
     name = request.GET.get('name')
     version = request.GET.get('version')
+    bundleid = request.GET.get('bundleid')
+    bundlename = request.GET.get('bundlename')
+    path = request.GET.get('path')
     
-    if name:
+    if name or bundleid or bundlename or path:
         item_detail = {}
-        item_detail['name'] = name
+        item_detail['name'] = name or bundleid or bundlename or path
+        
+        items = InventoryItem.objects.all()
+        if name:
+            items = items.filter(name__exact=name)
         if version:
-            items = InventoryItem.objects.filter(
-                name__exact=name, version__exact=version)
-        else:
-            items = InventoryItem.objects.filter(
-                name__exact=name)
+            if version.endswith('*'):
+                items = items.filter(
+                    version__startswith=version[0:-1])
+            else:
+                items = items.filter(version__exact=version)
+        if bundleid:
+            items = items.filter(bundleid__exact=bundleid)
+        if bundlename:
+            items = items.filter(bundlename__exact=bundlename)
+        if path:
+            items = items.filter(path__exact=path)
+            
         item_detail['instances'] = []
         for item in items:
             instance = {}
