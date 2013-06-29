@@ -94,7 +94,3 @@ div.edit_controls {
 	height: 52px; /*height of the spinner gif +2px to fix IE8 issue */
 }
 
-div.user_name_field {
-	width: 100%; 
-	height: 14px;
-}
