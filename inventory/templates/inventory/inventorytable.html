@@ -1,3 +1,4 @@
+{% load url from future %}
 <h3>{{ list_title }} <span class="badge badge-info">{{ inventory_items|length }}</span></h3>
 {% if inventory_items|length %}
   <p/>
@@ -15,12 +16,12 @@
       {% for item in inventory_items %}
           <tr>
               <td>
-                <a href='{% url inventory.views.items %}?name={{ item.name|urlencode }}'>
+                <a href='{% url "inventory.views.items" %}?name={{ item.name|urlencode }}'>
                   {{ item.name }}
                 </a>
               </td>
               <td>
-                <a href='{% url inventory.views.items %}?name={{ item.name|urlencode }}&version={{ item.version|urlencode }}'>
+                <a href='{% url "inventory.views.items" %}?name={{ item.name|urlencode }}&version={{ item.version|urlencode }}'>
                   {{ item.version }}
                 </a>
               </td>

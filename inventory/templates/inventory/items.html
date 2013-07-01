@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load url from future %}
 {% block java_script %}
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
@@ -27,13 +28,13 @@
 {% for item in item_list %}
     <tr class='catalog_item'>
         <td class='appname'>
-            <a href='{% url inventory.views.items %}?name={{ item.grouper|urlencode }}'>
+            <a href='{% url "inventory.views.items" %}?name={{ item.grouper|urlencode }}'>
                 {{ item.grouper }}
             </a>
         </td>
         <td>
         {% for version in item.list %}
-            <a href='{% url inventory.views.items %}?name={{ item.grouper|urlencode }}&version={{ version.version|urlencode }}'>
+            <a href='{% url "inventory.views.items" %}?name={{ item.grouper|urlencode }}&version={{ version.version|urlencode }}'>
                 {{ version.version }}
                 <span class="badge badge-info pull-right">{{ version.num_machines }}</span>
             </a>

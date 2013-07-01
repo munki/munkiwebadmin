@@ -1,3 +1,4 @@
+{% load url from future %}
 <h3>{{ list_title }} <span class="badge badge-info">{{ inventory_items|length }} </span></h3>
 {% if inventory_items|length %}
 <p/>
@@ -16,7 +17,7 @@
       {% for item in inventory_items %}
           <tr>
               <td>
-                <a href='{% url inventory.views.detail item.mac %}'>
+                <a href='{% url "inventory.views.detail" item.mac %}'>
                   {{ item.hostname }}
                 </a>
               </td>

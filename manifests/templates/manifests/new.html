@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load url from future %}
+
 {% block extra_style %}
 <style type="text/css">
     ul.errorlist {
@@ -25,7 +27,7 @@
 </script>
 {% endblock %}
 {% block content %}
-<form name='new_manifest_form' action="{% url manifests.views.new %}" method="post">
+<form name='new_manifest_form' action='{% url "manifests.views.new" %}' method="post">
 {% csrf_token %}
 <h2>Create new manifest</h2>
 <table>

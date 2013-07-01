@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load url from future %}
 
 {% block extra_style %}
 {% load static %}
@@ -38,7 +39,7 @@
   <span class="badge badge-info">{{ manifest_list|length }}</span>
 </h3>
 {% if manifest_list %}
-	{% url manifests.views.index as the_url %}
+	{% url "manifests.views.index" as the_url %}
 	<table class="table table-striped table-condensed" id='manifest_list_table'>
 	<thead>
 	<tr>
@@ -60,15 +61,13 @@
 {% else %}
     <p>No manifests are available.</p>
 {% endif %}
+{% if show_edit_controls %}
     <p/><p/>
-		{% if perms.reports.add_machine %}
-    <a class='btn btn-success' id='new_manifest' href='#' onclick="location.href='{% url manifests.views.new %}';">
+    <a class='btn btn-success' id='new_manifest' href='#' onclick="location.href='{% url "manifests.views.new" %}';">
     <i class='icon-plus icon-white'></i> New manifest</a>
-		{% endif %}
-		{% if perms.reports.delete_machine %}
     <a class='btn btn-danger disabled pull-right' id='delete_manifest' href='#' onclick="deleteManifest();">
     <i class='icon-trash icon-white'></i> Delete manifest</a>
-		{% endif %}
+{% endif %}
 </div>
 
 <div class="span7">
