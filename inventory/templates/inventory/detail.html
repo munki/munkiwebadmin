@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load url from future %}
 
 {% block java_script %}
 <script type="text/javascript" charset="utf-8">
@@ -23,14 +24,14 @@
 </div>
   <div class="span10">
     <h2>{{ machine.hostname }}</h2>
-	{% if model_lookup_enabled and additional_info.model_description|length > 1 %}
-	  <h3><small>{{ additional_info.model_description }}</small></h3>
-	{% endif %}
+    {% if model_lookup_enabled and additional_info.model_description|length > 1 %}
+      <h3><small>{{ additional_info.model_description }}</small></h3>
+    {% endif %}
     <p>
-      <a href='{% url reports.views.detail machine.mac %}'>Report</a> | <b>Inventory</b>
+      <a href='{% url "reports.views.detail" machine.mac %}'>Report</a> | <b>Inventory</b>
       <span title="Last inventory date">
-			  :: {{ machine.last_inventory_update|date:"Y-m-d H:i" }}
-		  </span>
+              :: {{ machine.last_inventory_update|date:"Y-m-d H:i" }}
+      </span>
     </p>
   </div>
 </div>

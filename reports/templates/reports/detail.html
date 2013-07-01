@@ -17,7 +17,16 @@
 </div>
   <div class="span10">
     <h2>{{ machine.hostname }}</h2>
-    <!--<h2><small>MacBook Air (13-inch, Mid 2011)</small><h2>-->
+    {% if model_lookup_enabled and additional_info.model_description|length > 1 %}
+      <h3><small>{{ additional_info.model_description }}</small></h3>
+    {% endif %}
+    <p>
+      <b>Report</b> 
+      <span title="Last report date">
+              :: {{ machine.last_munki_update|date:"Y-m-d H:i" }}
+      </span>
+      | <a href='{% url "inventory.views.detail" machine.mac %}'>Inventory</a>
+    </p>
   </div>
 </div>
 
