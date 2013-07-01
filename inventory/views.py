@@ -18,6 +18,8 @@ import bz2
 import hashlib
 
 from datetime import datetime
+import urllib2
+from xml.etree import ElementTree
 
 from models import Inventory, InventoryItem
 from reports.models import Machine
@@ -108,8 +110,9 @@ def inventory_hash(request, mac):
     else:
         raise Http404
     return HttpResponse(sha256hash)
-    
-    
+
+
+@login_required
 def index(request):
     all_machines = Machine.objects.all()
     return render_to_response('inventory/index.html',
@@ -118,6 +121,7 @@ def index(request):
                                'page': 'inventory'})
 
 
+@login_required
 def detail(request, mac):
     machine = None
     if mac:
@@ -136,13 +140,28 @@ def detail(request, mac):
         
     inventory_items = machine.inventoryitem_set.all()
     
+    # determine if the model description information should be shown
+    try:
+        MODEL_LOOKUP_ENABLED = settings.MODEL_LOOKUP_ENABLED
+    except:
+        MODEL_LOOKUP_ENABLED = False
+
+    # If enabled lookup the model description
+    additional_info = {}
+    if MODEL_LOOKUP_ENABLED and machine.serial_number:
+        additional_info['model_description'] = \
+            model_description_lookup(machine.serial_number)
+    
     return render_to_response('inventory/detail.html',
                              {'machine': machine,
                               'inventory_items': inventory_items,
                               'user': request.user,
+                              'additional_info': additional_info,
+                              'model_lookup_enabled': MODEL_LOOKUP_ENABLED,
                               'page': 'inventory'})
 
 
+@login_required
 def items(request):
     name = request.GET.get('name')
     version = request.GET.get('version')
@@ -196,3 +215,20 @@ def items(request):
                                    'user': request.user,
                                    'page': 'inventory_items'})
 
+
+def model_description_lookup(serial):
+    """Determines the models human readable description based off the serial
+    number"""
+    # Based off https://github.com/MagerValp/MacModelShelf/		
+    
+    snippet = serial[-3:]
+    if (len(serial) == 12):
+        snippet = serial[-4:]
+    try:
+        response = urllib2.urlopen(
+            "http://support-sp.apple.com/sp/product?cc=%s&lang=en_US" 
+            % snippet, timeout=2)
+        et = ElementTree.parse(response)
+        return et.findtext("configCode").decode("utf-8")
+    except:
+        return ''
