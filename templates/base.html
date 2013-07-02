@@ -25,7 +25,7 @@
 {% block extra_style %}{% endblock %}
 
 <script type='text/javascript' 
-  src='{% get_static_prefix %}js/jquery-1.7.2.min.js'>
+  src='{% get_static_prefix %}js/jquery.js'>
 </script>
 <script type='text/javascript' src='{% get_static_prefix %}js/jquery-ui-1.8.16.custom.min.js'></script>
 <script type='text/javascript' 
@@ -84,6 +84,9 @@
           <li {% if page == 'inventory_items' %} class="active" {% endif %}>
             <a href="/inventory/items">Inventory items</a>
           </li>
+          <!--<li {% if page == 'licenses' %} class="active" {% endif %}>
+            <a href="/licenses">Licenses</a>
+          </li>-->
         </ul>
         <ul class="nav pull-right">
           <li id="admin" class="loginlogout"><a href="/admin">Admin</a></li>
