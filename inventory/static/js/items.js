@@ -6,14 +6,6 @@
 
 $(document).ready(function()
 {
-    var version_count_template = function(name, version, count)
-    {
-        return "<a href='?name=" + encodeURIComponent(name) 
-            + "&version=" + encodeURIComponent(version) + "'>" + version 
-            + "<span class='badge badge-info pull-right'>" + count + "</span>"
-            + "</a><br />";
-    }
-
     // Perform the json call and format the results so that DataTables will
     // understand it.
     var process_json = function( sSource, aoData, fnCallback )
@@ -29,29 +21,36 @@ $(document).ready(function()
     }
 
 
-    var format_name_column = function(rowObject)
+    var version_count_template = function(name, version, count)
     {
-        var name = rowObject.aData['name'];
-        return '<a href="?name=' + encodeURIComponent(name)
-            + '">' + name + "</a>";
+        return "<a href='?name=" + encodeURIComponent(name) 
+            + "&version=" + encodeURIComponent(version) + "'>" + version 
+            + "<span class='badge badge-info pull-right'>" + count + "</span>"
+            + "</a><br />";
     }
 
 
-    var format_versions_column = function(rowObject)
+    var format_versions_column = function(data, type, rowObject)
     {
-        var v = rowObject.aData['versions'],
         out = ''
-        for(var i = 0; i < v.length; i++)
+        for(var i = 0; i < data.length; i++)
         {
-            var version = v[i]['version'],
-                count = v[i]['count'];
+            var version = data[i]['version'],
+                count = data[i]['count'];
             out += version_count_template(
-                rowObject.aData['name'],
+                rowObject['name'],
                 version,
                 count
             );
         }
         return out;
+    }
+
+
+    var format_name_column = function(data, type, rowObject)
+    {
+        return '<a href="?name=' + encodeURIComponent(data)
+            + '">' + data + "</a>";
     }
 
 
@@ -64,17 +63,11 @@ $(document).ready(function()
         "bStateSave": true,
         "aaSorting": [[4,'desc']],
         "aoColumns": [
-            {'mData': 'name'},
-            {'mData': 'versions'}
-        ],
-        "aoColumnDefs": [
-            {
-                'fnRender': format_name_column,
-                'aTargets': [0]
-            },
-            {
-                'fnRender': format_versions_column,
-                'aTargets': [1]
+            {'mData': 'name',
+             'mRender': format_name_column
+             },
+            {'mData': 'versions',
+             'mRender': format_versions_column
             }
         ]
     });
