@@ -8,11 +8,10 @@ $(document).ready(function()
 {
     var version_count_template = function(name, version, count)
     {
-        return "<a href='?name="
-            + encodeURIComponent(name) 
-            + "&version=" + encodeURIComponent(version)
-            + "'>" + version + "<span class='badge badge-info pull-right'>"
-            + count + "</span></a><br />";
+        return "<a href='?name=" + encodeURIComponent(name) 
+            + "&version=" + encodeURIComponent(version) + "'>" + version 
+            + "<span class='badge badge-info pull-right'>" + count + "</span>"
+            + "</a><br />";
     }
 
     // Perform the json call and format the results so that DataTables will
