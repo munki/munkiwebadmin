@@ -284,7 +284,8 @@ def detail(request, mac):
                                'report': report_plist,
                                'user': request.user,
                                'additional_info': additional_info,
-                               'warranty_lookup_enabled': WARRANTY_LOOKUP_ENABLED,
+                               'warranty_lookup_enabled': 
+                                                    WARRANTY_LOOKUP_ENABLED,
                                'model_lookup_enabled': MODEL_LOOKUP_ENABLED,
                                'page': 'reports'})
 
@@ -329,14 +330,14 @@ def estimate_manufactured_date(serial):
             return 'Unknown'    
     elif len(serial) == 12:
         try:
-			year_code = 'cdfghjklmnpqrstvwxyz'
-			year = serial[3].lower()
-			est_year = 2010 + (year_code.index(year) / 2)
-			est_half = year_code.index(year) % 2
-			week_code = ' 123456789cdfghjklmnpqrtvwxy'
-			week = serial[4:5].lower()
-			est_week = week_code.index(week) + (est_half * 26)
-			return formatted_manafactured_date(int(est_year), int(est_week))
+            year_code = 'cdfghjklmnpqrstvwxyz'
+            year = serial[3].lower()
+            est_year = 2010 + (year_code.index(year) / 2)
+            est_half = year_code.index(year) % 2
+            week_code = ' 123456789cdfghjklmnpqrtvwxy'
+            week = serial[4:5].lower()
+            est_week = week_code.index(week) + (est_half * 26)
+            return formatted_manafactured_date(int(est_year), int(est_week))
         except:
             return 'Unknown'    
     else:
@@ -429,7 +430,9 @@ def model_description_lookup(serial):
     if (len(serial) == 12):
         snippet = serial[-4:]
     try:
-        response = urllib2.urlopen("http://support-sp.apple.com/sp/product?cc=%s&lang=en_US" % snippet, timeout=2)
+        response = urllib2.urlopen(
+            "http://support-sp.apple.com/sp/product?cc=%s&lang=en_US" 
+            % snippet, timeout=2)
         et = ElementTree.parse(response)
         return et.findtext("configCode").decode("utf-8")
     except:
