@@ -7,5 +7,6 @@ urlpatterns = patterns('inventory.views',
     url(r'^hash/(?P<mac>[^/]+)$', 'inventory_hash'),
     url(r'^detail/(?P<mac>[^/]+)$', 'detail'),
     url(r'^items/*$', 'items'),
+    url(r'^items.json/*$', 'items_json'),
     #url(r'^(?P<mac>[^/]+)$', 'detail'),
 )

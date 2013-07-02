@@ -16,6 +16,7 @@ import plistlib
 import base64
 import bz2
 import hashlib
+import json
 
 from datetime import datetime
 import urllib2
@@ -207,13 +208,35 @@ def items(request):
              'user': request.user,
              'page': 'inventory'})
     else:
-        inventory_items = InventoryItem.objects.values(
-            'name', 'version').annotate(num_machines=Count('machine'))
-
         return render_to_response('inventory/items.html',
-                                  {'inventory_items': inventory_items,
-                                   'user': request.user,
+                                  {'user': request.user,
                                    'page': 'inventory_items'})
+
+
+def items_json(request):
+    inventory_items = InventoryItem.objects.values(
+        'name', 'version').annotate(num_machines=Count('machine'))
+
+    # build a dict so we can group by name
+    inventory_dict = {}
+    for item in inventory_items:
+        name = item['name']
+        version = item['version']
+        machine_count = item['num_machines']
+        if not name in inventory_dict:
+            inventory_dict[name] = []
+        inventory_dict[name].append({'version': version, 
+                                     'count': machine_count})
+
+    # convert to an array for use by DataTables
+    rows = []
+    for name, versions in inventory_dict.items():
+        rows.append({'name': name,
+                     'versions': versions})
+
+    # send it back in JSON format
+    return HttpResponse(json.dumps(rows),
+                        mimetype='application/json')
 
 
 def model_description_lookup(serial):

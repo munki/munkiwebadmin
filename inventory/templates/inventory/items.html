@@ -2,49 +2,22 @@
 
 {% load url from future %}
 {% block java_script %}
-<script type="text/javascript" charset="utf-8">
-    $(document).ready(function() {
-        $('.clientlist').dataTable({
-            "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-            "iDisplayLength": 20,
-            "aLengthMenu": [[20, 50, -1], [20, 50, "All"]],
-            "sPaginationType": "bootstrap",
-            "bStateSave": true,
-            "aaSorting": [[1,'asc']]
-        });
-    } );
-    // Auto-refresh the page after 5 minutes
-    window.setTimeout(function(){location.reload(true)}, 1000*60*5);
+{% load static %}
+<script type='text/javascript' 
+  src='{% get_static_prefix %}js/items.js'>
 </script>
 {% endblock %}
 
 {% block content %}
-{% regroup inventory_items by name as item_list %}
-<h3>Inventory items <span class="badge badge-info">{{ item_list|length }}</span></h3>
+<h3>Inventory items <span id="item-count-badge" class="badge badge-info"></span></h3>
 <p/>
-<table class='clientlist table table-striped table-condensed'>
-<thead>
-<tr><th>Name</th><th>Version(s)</th></tr>
-</thead>
-<tbody>
-{% for item in item_list %}
-    <tr class='catalog_item'>
-        <td class='appname'>
-            <a href='{% url "inventory.views.items" %}?name={{ item.grouper|urlencode }}'>
-                {{ item.grouper }}
-            </a>
-        </td>
-        <td>
-        {% for version in item.list %}
-            <a href='{% url "inventory.views.items" %}?name={{ item.grouper|urlencode }}&version={{ version.version|urlencode }}'>
-                {{ version.version }}
-                <span class="badge badge-info pull-right">{{ version.num_machines }}</span>
-            </a>
-            <br />
-        {% endfor %}
-        </td>
-        </tr>
-{% endfor %}
-</tbody>
+<table id='inventory-items-table' class='table table-striped table-condensed'>
+    <thead>
+        <tr><th>Name</th><th>Version(s)</th></tr>
+    </thead>
+    <tbody>
+        <!-- table is filled via AJAX/JSON calls by DataTables -->
+        <!-- see js/items.js -->
+    </tbody>
 </table>
 {% endblock %}
