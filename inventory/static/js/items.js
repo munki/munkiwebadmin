@@ -38,7 +38,7 @@ $(document).ready(function()
             var version = data[i]['version'],
                 count = data[i]['count'];
             out += version_count_template(
-                rowObject['name'],
+                rowObject.name,
                 version,
                 count
             );
@@ -61,6 +61,7 @@ $(document).ready(function()
         "sPaginationType": "bootstrap",
         "aLengthMenu": [[20, 50, -1], [20, 50, "All"]],
         "bStateSave": true,
+        "bDeferRender": true,
         "aaSorting": [[4,'desc']],
         "aoColumns": [
             {'mData': 'name',
