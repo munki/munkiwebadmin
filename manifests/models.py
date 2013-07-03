@@ -237,16 +237,17 @@ class Manifest(object):
         '''Returns a list of suggested install item names for the
         given manifest, taking into account the current list
         of catalogs, and filtering out updates and versions.'''
-        install_items = []
+        install_items = set()
         manifest = cls.read(manifest_name)
         if manifest:
             catalog_list = manifest.get('catalogs', [])
             for catalog in catalog_list:
                 catalog_items = Catalog.detail(catalog)
-                install_items = list(set(
+                install_item_names = list(set(
                     [item['name'] for item in catalog_items
                     if not item.get('update_for')]))
-        return install_items
+                install_items.update(install_item_names)
+        return list(install_items)
 
     @classmethod
     def findUserForManifest(cls, manifest_name):
