@@ -243,10 +243,11 @@ class Manifest(object):
             catalog_list = manifest.get('catalogs', [])
             for catalog in catalog_list:
                 catalog_items = Catalog.detail(catalog)
-                install_item_names = list(set(
-                    [item['name'] for item in catalog_items
-                    if not item.get('update_for')]))
-                install_items.update(install_item_names)
+                if catalog_items:
+                    install_item_names = list(set(
+                        [item['name'] for item in catalog_items
+                        if not item.get('update_for')]))
+                    install_items.update(install_item_names)
         return list(install_items)
 
     @classmethod
