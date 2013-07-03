@@ -7,5 +7,4 @@ urlpatterns = patterns('manifests.views',
     #url(r'^#(?P<manifest_name>.+)/$', 'index'),
     url(r'^view/(?P<manifest_name>[^/]+)/$', 'view'),
     url(r'^detail/(?P<manifest_name>[^/]+)$', 'detail'),
-    url(r'^json/autocomplete/(?P<manifest_name>[^/]+)$', 'autocomplete_data'),
 )

@@ -92,24 +92,11 @@ function getManifestDetail(manifest_name) {
     event.preventDefault();
 }
 
-var autocomplete_data = {};
+
 var inEditMode = false;
 function makeEditableItems(manifest_name) {
-    $("#imgProgress").show();
-    // get data for use in autocomplete
-    var source_url = "/manifest/json/autocomplete/"
-                     + manifest_name.replace(/\//g, ':');
-    $.getJSON(source_url, function(data) {
-        autocomplete_data = data;
-        $("#imgProgress").hide();
-        continueMakeEditableItems(manifest_name);
-    });
-}
-
-function continueMakeEditableItems(manifest_name) {
-    // we do this after we've retrieved the autocomplete
-    // data so the fields aren't editable too early and have no
-    // data...
+    // grab autocomplete data from document
+    var autocomplete_data = $('#data_storage').data('autocomplete_data');
     // make sections sortable and drag/droppable
     $('.catalogs_section').sortable();
     $('.included_manifests_section').sortable();
@@ -123,7 +110,7 @@ function continueMakeEditableItems(manifest_name) {
     });
     $('.lineitem').append("<a href='#' class='btn btn-danger btn-mini lineitem_delete'><i class='icon-minus icon-white'></i><a>");
     $('.editable').on('dblclick', function() {
-        makeEditableItem(manifest_name, $(this));
+        makeEditableItem(manifest_name, autocomplete_data, $(this));
     });
     $('.lineitem_delete').on('click', function() {
       if ($(this).parent().attr('id')) {    
@@ -137,7 +124,8 @@ function continueMakeEditableItems(manifest_name) {
     $('.add_item').click(function() {
         var list_item = $("<li class='lineitem'><div class='editable'></div><a href='#' class='btn btn-danger btn-mini lineitem_delete'><i class='icon-minus icon-white'></i><a></li>");
         $(this).parent().siblings($('ul')).append(list_item);
-        makeEditableItem(manifest_name, list_item.children(".editable"));
+        makeEditableItem(
+            manifest_name, autocomplete_data, list_item.children(".editable"));
     });
     $('.edit').val('Save').unbind('click').click(function() {
         getManifestDetailFromDOMAndSave();
@@ -160,7 +148,7 @@ function updateLineItem(item) {
     }
 }
 
-function makeEditableItem(manifest_name, editable_div) {
+function makeEditableItem(manifest_name, autocomplete_data, editable_div) {
     // commit any existing active lineiteminput
     $('.lineiteminput').each(function(){updateLineItem($(this))});
 

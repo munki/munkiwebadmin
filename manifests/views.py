@@ -151,21 +151,6 @@ def index(request, manifest_name=None):
 @login_required
 def view(request, manifest_name=None):
     return index(request, manifest_name)
-    
-    
-def autocomplete_data(request, manifest_name):
-    '''Returns JSON data used for autocompletion in the manifest editor'''
-    install_items = Manifest.getSuggestedInstallItems(manifest_name)
-    install_items.sort()
-    valid_catalogs = Catalog.list()
-    valid_catalogs.sort()
-    valid_manifest_names = Manifest.list()
-    valid_manifest_names.sort()
-    autocomplete_data = {'items': install_items,
-                         'catalogs': valid_catalogs,
-                         'manifests': valid_manifest_names}
-    return HttpResponse(json.dumps(autocomplete_data),
-                        mimetype='application/json')
 
 
 @login_required
@@ -184,9 +169,19 @@ def detail(request, manifest_name):
             return HttpResponse(json.dumps('success'))
     if request.method == 'GET':
         manifest = Manifest.read(manifest_name)
-        valid_install_items = Manifest.getValidInstallItems(manifest_name)
+        #valid_install_items = Manifest.getValidInstallItems(manifest_name)
+        install_items = Manifest.getInstallItemNames(manifest_name)
+        valid_install_items = (install_items['suggested'] + 
+                               install_items['updates'] +
+                                install_items['with_version'])
+        suggested_install_items = install_items['suggested']
         valid_catalogs = Catalog.list()
         valid_manifest_names = Manifest.list()
+        autocomplete_data = json.dumps({
+            'items': install_items['suggested'],
+            'catalogs': valid_catalogs,
+            'manifests': valid_manifest_names
+        })
         manifest_user = manifest.get(MANIFEST_USERNAME_KEY, '')
         
         c = RequestContext(request, 
@@ -195,8 +190,10 @@ def detail(request, manifest_name):
             'manifest_user_is_editable': MANIFEST_USERNAME_IS_EDITABLE,
             'manifest': manifest,
             'valid_install_items': valid_install_items,
+            'install_items': install_items,
             'valid_catalogs': valid_catalogs,
             'valid_manifest_names': valid_manifest_names,
+            'autocomplete_data': autocomplete_data,
             'user': request.user,
             'page': 'manifests'})
         c.update(csrf(request))

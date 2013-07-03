@@ -210,45 +210,34 @@ class Manifest(object):
             git.deleteFileAtPathForCommitter(manifest_path, committer)
 
     @classmethod
-    def getValidInstallItems(cls, manifest_name):
-        '''Returns a list of valid install item names for the
-        given manifest, taking into account the current list
-        of catalogs'''
+    def getInstallItemNames(cls, manifest_name):
+        '''Returns a dictionary containing types of install items
+        valid for the current manifest'''
+        suggested_set = set()
+        update_set = set()
+        versioned_set = set()
         manifest = cls.read(manifest_name)
         if manifest:
-            catalog_list = manifest.get('catalogs', [])
-            install_items = set()
+            catalog_list = manifest.get('catalogs', ['all'])
             for catalog in catalog_list:
                 catalog_items = Catalog.detail(catalog)
                 if catalog_items:
-                    catalog_item_names = list(set(
-                        [item['name'] for item in catalog_items]))
-                    install_items.update(catalog_item_names)
-                    catalog_item_names_with_versions = list(set(
+                    suggested_names = list(set(
+                        [item['name'] for item in catalog_items
+                         if not item.get('update_for')]))
+                    suggested_set.update(suggested_names)
+                    update_names = list(set(
+                        [item['name'] for item in catalog_items
+                         if item.get('update_for')]))
+                    update_set.update(update_names)
+                    item_names_with_versions = list(set(
                         [item['name'] + '-' + 
                         trimVersionString(item['version'])
                         for item in catalog_items]))
-                    install_items.update(catalog_item_names_with_versions)
-            return list(install_items)
-        return []
-
-    @classmethod
-    def getSuggestedInstallItems(cls, manifest_name):
-        '''Returns a list of suggested install item names for the
-        given manifest, taking into account the current list
-        of catalogs, and filtering out updates and versions.'''
-        install_items = set()
-        manifest = cls.read(manifest_name)
-        if manifest:
-            catalog_list = manifest.get('catalogs', [])
-            for catalog in catalog_list:
-                catalog_items = Catalog.detail(catalog)
-                if catalog_items:
-                    install_item_names = list(set(
-                        [item['name'] for item in catalog_items
-                        if not item.get('update_for')]))
-                    install_items.update(install_item_names)
-        return list(install_items)
+                    versioned_set.update(item_names_with_versions)
+        return {'suggested': list(suggested_set),
+                'updates': list(update_set),
+                'with_version': list(versioned_set)}
 
     @classmethod
     def findUserForManifest(cls, manifest_name):
