@@ -151,62 +151,20 @@ def index(request, manifest_name=None):
 @login_required
 def view(request, manifest_name=None):
     return index(request, manifest_name)
-
-
-def get_suggestions(request, item_list):
-    suggestions = []
-    if item_list:
-        term = request.GET.get('term', '').lower()
-        if term:
-            suggestions = [ item for item in item_list 
-                            if term in item.lower() ]
-        suggestions.sort()
-    return HttpResponse(json.dumps(suggestions),
-                        mimetype='application/json')
-
-
-def json_suggested_items(request, manifest_name):
-    valid_install_items = Manifest.getSuggestedInstallItems(manifest_name)
-    return get_suggestions(request, valid_install_items)
-
-
-def json_catalog_names(request):
+    
+    
+def autocomplete_data(request, manifest_name):
+    '''Returns JSON data used for autocompletion in the manifest editor'''
+    install_items = Manifest.getSuggestedInstallItems(manifest_name)
+    install_items.sort()
     valid_catalogs = Catalog.list()
     valid_catalogs.sort()
-    term = request.GET.get('term', '').lower()
-    if term:
-        suggestions = [ item for item in valid_catalogs 
-                        if term in item.lower() ]
-    else:
-        suggestions = valid_catalogs
-    return HttpResponse(json.dumps(suggestions),
-                        mimetype='application/json')
-
-
-def old_json_catalog_names(request):
-    valid_catalogs = Catalog.list()
-    valid_catalogs.sort()
-    return HttpResponse(json.dumps(valid_catalogs),
-                        mimetype='application/json')
-
-
-def json_manifest_names(request):
     valid_manifest_names = Manifest.list()
     valid_manifest_names.sort()
-    term = request.GET.get('term', '').lower()
-    if term:
-        suggestions = [ item for item in valid_manifest_names
-                        if term in item.lower() ]
-    else:
-        suggestions = valid_manifest_names
-    return HttpResponse(json.dumps(suggestions),
-                        mimetype='application/json')
-
-
-def old_json_manifest_names(request):
-    valid_manifest_names = Manifest.list()
-    valid_manifest_names.sort()
-    return HttpResponse(json.dumps(valid_manifest_names),
+    autocomplete_data = {'items': install_items,
+                         'catalogs': valid_catalogs,
+                         'manifests': valid_manifest_names}
+    return HttpResponse(json.dumps(autocomplete_data),
                         mimetype='application/json')
 
 

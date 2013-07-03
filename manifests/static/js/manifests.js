@@ -78,8 +78,8 @@ function getManifestDetail(manifest_name) {
         $('#detail').html(data);
         $('.edit').click(function(){
             makeEditableItems(manifest_name);
-            $("#imgProgress").hide();
         });
+        $("#imgProgress").hide();
     });
     $('.manifest[id="' + manifest_name + '"]').addClass('selected');
     $('.manifest[id!="' + manifest_name + '"]').removeClass('selected');
@@ -92,8 +92,16 @@ function getManifestDetail(manifest_name) {
     event.preventDefault();
 }
 
+var autocomplete_data = {};
 var inEditMode = false;
 function makeEditableItems(manifest_name) {
+    // get data for use in autocomplete
+    var source_url = "/manifest/json/autocomplete/"
+                     + manifest_name.replace(/\//g, ':');
+    $.getJSON(source_url, function(data) {
+        autocomplete_data = data;
+    });
+    // make sections sortable and drag/droppable
     $('.catalogs_section').sortable();
     $('.included_manifests_section').sortable();
     $('.section').sortable({
@@ -150,16 +158,17 @@ function makeEditableItem(manifest_name, editable_div) {
     var text_value = editable_div.text();
     var input_box = $("<input type='text' id='" + text_value + "' class='lineiteminput' value='" + text_value + "' />");
     var grandparent_id = editable_div.parent().parent().attr('id');
-    var source_url = "/manifest/json/suggested_items/" + manifest_name;
+    var kind = 'items';
     if (grandparent_id == 'catalogs') {
-      source_url = "/manifest/json/catalog_names/";
+      kind = 'catalogs';
     } else if (grandparent_id == 'included_manifests') {
-      source_url = "/manifest/json/manifest_names/";
+      kind = 'manifests';
     }
     editable_div.replaceWith(input_box);
     input_box.autocomplete({
-        source: source_url,
-        minLength: 3,
+        source: autocomplete_data[kind],
+        minLength: 1,
+        delay: 0,
     })
     input_box.focus();
     input_box.bind('keyup', function(event) {
