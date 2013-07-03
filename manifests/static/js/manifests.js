@@ -102,7 +102,14 @@ function makeEditableItems(manifest_name) {
     $.getJSON(source_url, function(data) {
         autocomplete_data = data;
         $("#imgProgress").hide();
+        continueMakeEditableItems(manifest_name);
     });
+}
+
+function continueMakeEditableItems(manifest_name) {
+    // we do this after we've retrieved the autocomplete
+    // data so the fields aren't editable too early and have no
+    // data...
     // make sections sortable and drag/droppable
     $('.catalogs_section').sortable();
     $('.included_manifests_section').sortable();
