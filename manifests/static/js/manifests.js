@@ -95,11 +95,13 @@ function getManifestDetail(manifest_name) {
 var autocomplete_data = {};
 var inEditMode = false;
 function makeEditableItems(manifest_name) {
+    $("#imgProgress").show();
     // get data for use in autocomplete
     var source_url = "/manifest/json/autocomplete/"
                      + manifest_name.replace(/\//g, ':');
     $.getJSON(source_url, function(data) {
         autocomplete_data = data;
+        $("#imgProgress").hide();
     });
     // make sections sortable and drag/droppable
     $('.catalogs_section').sortable();
