@@ -11,7 +11,8 @@ class Machine(models.Model):
     username = models.CharField(max_length=256)
     location = models.CharField(max_length=256)
     remote_ip = models.CharField(max_length=15)
-    machine_model = models.CharField(max_length=64, blank=True, default="vitual-machine")
+    machine_model = models.CharField(
+        max_length=64, blank=True, default="virtual-machine")
     cpu_type = models.CharField(max_length=64, blank=True)
     cpu_speed = models.CharField(max_length=32, blank=True)
     cpu_arch = models.CharField(max_length=32, blank=True)
