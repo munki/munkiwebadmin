@@ -210,7 +210,7 @@ def items(request):
     else:
         return render_to_response('inventory/items.html',
                                   {'user': request.user,
-                                   'page': 'inventory_items'})
+                                   'page': 'inventory'})
 
 
 def items_json(request):

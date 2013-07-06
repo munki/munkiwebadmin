@@ -27,18 +27,14 @@
 <script type='text/javascript' 
   src='{% get_static_prefix %}js/jquery-1.9.1.js'>
 </script>
-<script type='text/javascript' src='{% get_static_prefix %}js/jquery-ui-1.10.3.custom.min.js'></script>
+<script type='text/javascript' 
+  src='{% get_static_prefix %}js/jquery-ui-1.10.3.custom.min.js'>
+</script>
 <script type='text/javascript' 
   src='{% get_static_prefix %}js/jquery.dataTables.min.js'>
 </script>
 <script type='text/javascript' 
   src='{% get_static_prefix %}js/bootstrap.min.js'>
-</script>
-<script type='text/javascript' 
-  src='{% get_static_prefix %}js/bootstrap-transition.js'>
-</script>
-<script type='text/javascript' 
-  src='{% get_static_prefix %}js/bootstrap-dropdown.js'>
 </script>
 <script type='text/javascript' 
   src='{% get_static_prefix %}js/datatables-bootstrap.js'>
@@ -50,7 +46,7 @@
 {% block body_tag %}<body>{% endblock %}
 
 {% block main_menu %}
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top navbar-inverse">
   <div class="navbar-inner">
     <div class="container">
 
@@ -78,11 +74,15 @@
           <li {% if page == 'manifests' %} class="active" {% endif %}>
             <a href="/manifest">Manifests</a>
           </li>
-          <li {% if page == 'inventory' %} class="active" {% endif %}>
-            <a href="/inventory">Inventory Clients</a>
-          </li>
-          <li {% if page == 'inventory_items' %} class="active" {% endif %}>
-            <a href="/inventory/items">Inventory items</a>
+          <li class="dropdown {% if page == 'inventory' %}active{% endif %}">
+            <a class='dropdown-toggle' href="#" data-toggle='dropdown'>
+                Inventory
+                <b class="caret"></b>
+            </a>
+            <ul class='dropdown-menu'>
+                <li><a href="/inventory">Inventory Clients</a></li>
+                <li><a href="/inventory/items">Inventory items</a></li>
+            </ul>
           </li>
           <!--<li {% if page == 'licenses' %} class="active" {% endif %}>
             <a href="/licenses">Licenses</a>
