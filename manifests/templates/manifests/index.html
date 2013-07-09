@@ -61,7 +61,7 @@
 {% else %}
     <p>No manifests are available.</p>
 {% endif %}
-{% if show_edit_controls %}
+{% if perms.reports.change_machine %}
     <p/><p/>
     <a class='btn btn-success' id='new_manifest' href='#' onclick="location.href='{% url "manifests.views.new" %}';">
     <i class='icon-plus icon-white'></i> New manifest</a>
