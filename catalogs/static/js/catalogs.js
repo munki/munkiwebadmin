@@ -7,7 +7,7 @@ $(document).ready(function() {
         "sScrollY": "480px",
         "bScrollCollapse": true,
         "bInfo": false,
-        "bFilter": false,
+        "bFilter": true,
         "bStateSave": true,
         "aaSorting": [[0,'asc']]
     });
