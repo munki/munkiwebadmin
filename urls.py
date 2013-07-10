@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^catalog/', include('catalogs.urls')),
     url(r'^report/', include('reports.urls')),
     url(r'^inventory/', include('inventory.urls')),
+    url(r'^licenses/', include('licenses.urls')),
     # for compatibility with MunkiReport scripts
     url(r'^update/', include('reports.urls')),
     url(r'^lookup/', include('reports.urls')),
