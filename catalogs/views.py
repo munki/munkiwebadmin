@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from models import Catalog
+from django.utils.datastructures import SortedDict
 
 import json
 
@@ -48,8 +49,21 @@ def trimVersionString(version_string):
 @login_required                              
 def item_detail(request, catalog_name, item_index):
     catalog_item = Catalog.item_detail(catalog_name, item_index)
+    featured_keys = ['name', 'version', 'display_name', 
+                     'description', 'catalogs']
+    # sort the item by key so keys are displayed
+    # in expected order
+    sorted_dict = SortedDict()
+    for key in featured_keys:
+        if key in catalog_item:
+            sorted_dict[key] = catalog_item[key]
+    key_list = catalog_item.keys()
+    key_list.sort()
+    for key in key_list:
+        if key not in featured_keys:
+            sorted_dict[key] = catalog_item[key]
     return render_to_response('catalogs/item_detail.html', 
-                              {'catalog_item': catalog_item})
+                              {'catalog_item': sorted_dict})
                               
 
 @login_required

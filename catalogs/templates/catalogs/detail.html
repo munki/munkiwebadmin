@@ -1,47 +1,3 @@
-<html>
-<head>
-<style type="text/css">
-table.catalog_items {
-	font: 14px Helvetica, Arial, Verdana, sans-serif;
-	border-right: 1px solid #C1DAD7;
-	border-left: 1px solid #C1DAD7;
-	border-bottom: 1px solid #C1DAD7;
-	border-top: 1px solid #C1DAD7;
-	text-align: left;
-	padding: 6px 6px 6px 12px;
-	background: #FFFFFF;
-	width: 100%;
-}
-table.catalog_detail {
-	font: 12px Helvetica, Arial, Verdana, sans-serif;
-	border-right: 1px solid #C1DAD7;
-	border-left: 1px solid #C1DAD7;
-	border-bottom: 1px solid #C1DAD7;
-	border-top: 1px solid #C1DAD7;
-	text-align: left;
-	padding: 6px 6px 6px 12px;
-	background: #DDDDDD;
-}
-th.label {
-	text-align: right;
-	vertical-align: top;
-}
-td.item-name {
-	vertical-align: top;
-}
-td.value {
-	background: #EEEEEE;
-}
-tr {
-	background: #EEEEEE;
-}
-#item_name {
-	font: bold 18px Helvetica, Arial, Verdana, sans-serif;
-	padding: 6px 6px 6px 12px;
-}
-</style>
-</head>
-<body>
 {% if catalog %}
 	<div id="item_name">{{ catalog_name }}</div>
 	<table class='catalog_items'>
@@ -61,5 +17,3 @@ tr {
 {% else %}
     <p>Catalog {{ catalog_name }} is empty.</p>
 {% endif %}
-</body>
-</html>

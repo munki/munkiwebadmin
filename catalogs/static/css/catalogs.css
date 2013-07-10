@@ -32,9 +32,9 @@ table.main {
 	overflow-y: auto;
 }
 div.item_detail {
-  max-height: 512px;
+  /*max-height: 512px;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto;*/
 
 }
 table.detail {
@@ -59,11 +59,58 @@ td.label {
 td.value {
 	background: #EEEEEE;
 }
+td.prewrap, td.code {
+  white-space: pre-wrap;
+}
+td.code {
+  font-family: Andale Mono, monospace;
+  font-size: 9pt;
+}
+table.catalog_items {
+	font: 14px Helvetica, Arial, Verdana, sans-serif;
+	border-right: 1px solid #C1DAD7;
+	border-left: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	border-top: 1px solid #C1DAD7;
+	text-align: left;
+	padding: 6px 6px 6px 12px;
+	background: #FFFFFF;
+	width: 100%;
+}
+table.catalog_detail {
+	font: 12px Helvetica, Arial, Verdana, sans-serif;
+	border-right: 1px solid #C1DAD7;
+	border-left: 1px solid #C1DAD7;
+	border-bottom: 1px solid #C1DAD7;
+	border-top: 1px solid #C1DAD7;
+	text-align: left;
+	padding: 6px 6px 6px 12px;
+	background: #DDDDDD;
+}
+td.item-name {
+	vertical-align: top;
+}
+tr {
+	background: #EEEEEE;
+}
 #item_name {
-	/*font: bold 18px Helvetica, Arial, Verdana, sans-serif;*/
-	font: bold 18px;
+	font: bold 18px Helvetica, Arial, Verdana, sans-serif;
 	padding: 6px 6px 6px 12px;
 }
 .selected {
 	background: #BBCCFF;
+}
+.wraptext {
+	table-layout: fixed;
+	word-wrap: break-word;
+}
+
+.list {
+	list-style: none; 
+	padding: 0px; 
+	margin: 0px;
+}
+
+.listborder {
+	border-top: solid 1px #DDD;
 }
