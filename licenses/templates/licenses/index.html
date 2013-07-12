@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block java_script %}
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+        $('.licenselist').dataTable({
+            "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "iDisplayLength": 20,
+            "aLengthMenu": [[20, 50, -1], [20, 50, "All"]],
+            "sPaginationType": "bootstrap",
+            "bStateSave": true,
+            "aaSorting": [[4,'desc']]
+        });
+    } );
+</script>
+{% endblock %}
+
+{% block content %}
+  {% with license_list=licenses list_title='Licenses' %}
+    {% include 'licenses/licensetable.html' %}
+  {% endwith %}
+{% endblock %}
