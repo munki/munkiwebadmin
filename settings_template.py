@@ -175,6 +175,7 @@ INSTALLED_APPS = (
     'catalogs',
     'manifests',
     'inventory',
+    'licenses',
 )
 
 # A sample logging configuration. The only tangible logging
