@@ -19,7 +19,9 @@ def index(request):
 
 def available(request, item_name=''):
     '''Returns license seat availability for item_name in plist format.
-    For use by Munki client.'''
+    Key is item_name, value is boolean.
+    For use by Munki client to determine if a given item should be made
+    available for optional install.'''
     output_style = request.GET.get('output_style', 'plist')
     item_names = []
     if item_name:
@@ -31,7 +33,7 @@ def available(request, item_name=''):
         for name in item_names:
             try:
                 license = License.objects.get(item_name=name)
-                info[name] = license.available()
+                info[name] = (license.available() > 0)
             except (License.DoesNotExist):
                 pass
     else:
@@ -48,7 +50,7 @@ def available(request, item_name=''):
 
 
 def usage(request, item_name=''):
-    '''Returns license info for item_name in plist format.'''
+    '''Returns license info for item_name in plist or json format.'''
     output_style = request.GET.get('output_style', 'plist')
     item_names = []
     if item_name:
