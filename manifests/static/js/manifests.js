@@ -109,10 +109,10 @@ function makeEditableItems(manifest_name) {
         $(this).replaceWith(item);
     });
     $('.lineitem').append("<a href='#' class='btn btn-danger btn-mini lineitem_delete'><i class='icon-minus icon-white'></i><a>");
-    $('.editable').on('dblclick', function() {
+    $('.section').on('dblclick', '.editable', function() {
         makeEditableItem(manifest_name, autocomplete_data, $(this));
     });
-    $('.lineitem_delete').on('click', function() {
+    $('.section').on('click', '.lineitem_delete', function() {
       if ($(this).parent().attr('id')) {    
         var r = confirm("Really delete " + $(this).parent().attr('id') + " from " + $(this).parent().parent().attr('id') + "?");
         if (r == true){ $(this).parent().remove(); };
@@ -162,11 +162,7 @@ function makeEditableItem(manifest_name, autocomplete_data, editable_div) {
       kind = 'manifests';
     }
     editable_div.replaceWith(input_box);
-    input_box.autocomplete({
-        source: autocomplete_data[kind],
-        minLength: 1,
-        delay: 0,
-    })
+    input_box.typeahead({source: autocomplete_data[kind]})
     input_box.focus();
     input_box.bind('keyup', function(event) {
         if (event.which == '13' || event.which == '9') {
