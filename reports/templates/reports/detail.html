@@ -150,11 +150,11 @@
 <a name="errors">&nbsp;</a>
 <h3>Errors <span class="badge badge-important">{{ report.Errors|length }}</span>        </h3>
 {% if report.Errors|length %}
-  <pre class="error">{{ report.Errors|join:'<br>' }}</pre>
+  <pre class="text-error">{{ report.Errors|join:'<br>' }}</pre>
 {% endif %}
 <h3>Warnings <span class="badge badge-warning">{{ report.Warnings|length }}</span></h3>
 {% if report.Warnings|length %}
-  <pre class="warning">{{ report.Warnings|join:'<br>' }}</pre>
+  <pre class="text-warning">{{ report.Warnings|join:'<br>' }}</pre>
 {% endif %}
   </div>
 </div>

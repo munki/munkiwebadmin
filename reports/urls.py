@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('reports.views',
     url(r'^index/*$', 'index'),
+    url(r'^dashboard/*$', 'dashboard'),
     url(r'^$', 'overview'),
     url(r'^overview/*$', 'overview'),
     url(r'^detail/(?P<mac>[^/]+)$', 'detail'),

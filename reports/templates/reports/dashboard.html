@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load url from future %}
+
+{% block java_script %}
+{% load static %}
+
+<script type="text/javascript" charset="utf-8">
+    // Auto-refresh the page after 5 minutes
+    window.setTimeout(function(){location.reload(true)}, 1000*60*5);
+</script>
+
+{% endblock %}
+
+{% block content %}
+{% load report_extras %}
+<div class='row'>
+    <div class='span4'>
+        <legend>Status</legend>
+        <div class='widget-content'>
+            <table class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <td>
+                        {% if munki.errors %}
+                        <a href='{% url 'reports.views.index' %}?show=errors'>
+                        {% endif %}
+                        Clients with errors
+                        <span class="badge badge-important pull-right">
+                            {{ munki.errors }}
+                        </span>
+                        {% if munki.errors %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.warnings %}
+                        <a href='{% url 'reports.views.index' %}?show=warnings'>
+                        {% endif %}
+                        Clients with warnings
+                        <span class="badge badge-warning pull-right">
+                            {{ munki.warnings }}
+                        </span>
+                        {% if munki.warnings %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.activity %}
+                        <a href='{% url 'reports.views.index' %}?show=activity'>
+                        {% endif %}
+                        Clients with activity
+                        <span class="badge badge-info pull-right">
+                            {{ munki.activity }}
+                        </span>
+                        {% if munki.activity %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class='span4'>
+        <legend>Check-ins</legend>
+        <div class='widget-content'>
+            <table class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <td>
+                        {% if munki.checked_in_this_hour %}
+                        <a href='{% url 'reports.views.index' %}?show=hour'>
+                        {% endif %}
+                        This hour
+                        <span class="badge badge-info pull-right">
+                            {{ munki.checked_in_this_hour }}
+                        </span>
+                        {% if munki.checked_in_this_hour %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.checked_in_today %}
+                        <a href='{% url 'reports.views.index' %}?show=today'>
+                        {% endif %}
+                        Today
+                        <span class="badge badge-info pull-right">
+                            {{ munki.checked_in_today }}
+                        </span>
+                        {% if munki.checked_in_today %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.checked_in_past_week %}
+                        <a href='{% url 'reports.views.index' %}?show=week'>
+                        {% endif %}
+                        Past week
+                        <span class="badge badge-info pull-right">
+                            {{ munki.checked_in_past_week }}
+                        </span>
+                        {% if munki.checked_in_past_week %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class='span4'>
+        <legend>No check-ins</legend>
+        <div class='widget-content'>
+            <table class="table table-striped table-condensed table-bordered">
+                <tr>
+                    <td>
+                        {% if munki.not_for_week %}
+                        <a href='{% url 'reports.views.index' %}?show=notweek'>
+                        {% endif %}
+                        Past week
+                        <span class="badge badge-info pull-right">
+                            {{ munki.not_for_week }}
+                        </span>
+                        {% if munki.not_for_week %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.not_for_month %}
+                        <a href='{% url 'reports.views.index' %}?show=notmonth'>
+                        {% endif %}
+                        Past month
+                        <span class="badge badge-warning pull-right">
+                            {{ munki.not_for_month }}
+                        </span>
+                        {% if munki.not_for_month %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {% if munki.not_three_months %}
+                        <a href='{% url 'reports.views.index' %}?show=notquarter'>
+                        {% endif %}
+                        Past three months
+                        <span class="badge badge-important pull-right">
+                            {{ munki.not_three_months }}
+                        </span>
+                        {% if munki.not_three_months %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div><!-- /row -->
+<div class='row'>
+    <div class="span4">
+        <legend>OS breakdown</legend>
+        <div class="widget-content">
+            <table class="table table-striped table-condensed table-bordered">
+            {% for item in os_info|dictsort:'os_version' %}
+                <tr>
+                    <td>
+                        <a href='{% url 'reports.views.index' %}?os_version={{ item.os_version|urlencode }}'>
+                        {{ item.os_version }}
+                        <span class="badge pull-right">{{ item.count }}</span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="span4">
+        <legend>Hardware breakdown</legend>
+        <div class="widget-content">
+            <table class="table table-striped table-condensed table-bordered">
+            {% for item in machine_info|dictsort:'machine_model' %}
+                <tr>
+                    <td>
+                        <a href='{% url 'reports.views.index' %}?model={{ item.machine_model|urlencode }}'>
+                        {{ item.machine_model }}
+                        <span class="badge pull-right">{{ item.count }}</span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="span4">
+        <legend>Low disk space</legend>
+        <div class="widget-content">
+            <table class="table table-striped table-condensed table-bordered">
+            {% for item in low_disk_machines|dictsort:'available_disk_space' %}
+                <tr>
+                    <td>
+                        <a href='{% url 'reports.views.detail' item.mac %}'>
+                        {{ item.hostname }}
+                        <span class="pull-right">
+                            {{ item.available_disk_space|humanreadablesize }}
+                        </span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+</div><!-- /row -->
+
+{% endblock %}

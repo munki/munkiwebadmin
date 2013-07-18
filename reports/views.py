@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.db.models import Count
 
 from models import Machine, MunkiReport
 
@@ -125,13 +126,104 @@ def submit(request, submission_type):
 
 @login_required
 def index(request):
+    show = request.GET.get('show')
+    os_version = request.GET.get('os_version')
+    model = request.GET.get('model')
     
-    all_reports = MunkiReport.objects.all()
+    reports = MunkiReport.objects.all()
     
+    if show is not None:
+        now = datetime.now()
+        hour_ago = now - timedelta(hours=1)
+        today = date.today()
+        tomorrow = today + timedelta(days=1)
+        week_ago = today - timedelta(days=7)
+        month_ago = today - timedelta(days=30)
+        three_months_ago = today - timedelta(days=90)
+    
+        if show == 'errors':
+            reports = reports.filter(errors__gt=0)
+        elif show == 'warnings':
+            reports = reports.filter(warnings__gt=0)
+        elif show == 'activity':
+            reports = reports.filter(activity__isnull=False)
+        elif show == 'hour':
+            reports = reports.filter(machine__last_munki_update__gte=hour_ago)
+        elif show == 'today':
+            reports = reports.filter(machine__last_munki_update__gte=today)
+        elif show == 'week':
+            reports = reports.filter(machine__last_munki_update__gte=week_ago)
+        elif show == 'month':
+            reports = reports.filter(machine__last_munki_update__gte=month_ago)
+        elif show == 'notweek':
+            reports = reports.filter(
+                machine__last_munki_update__range=(month_ago, week_ago))
+        elif show == 'notmonth':
+            reports = reports.filter(
+                machine__last_munki_update__range=(three_months_ago,
+                                                   month_ago))
+        elif show == 'notquarter':
+            reports = reports.exclude(
+                machine__last_munki_update__gte=three_months_ago)
+        
+    if os_version is not None:
+        reports = reports.filter(machine__os_version__exact=os_version)
+        
+    if model is not None:
+        reports = reports.filter(machine__machine_model__exact=model)
+            
     return render_to_response('reports/index.html', 
-        {'reports': all_reports,
+        {'reports': reports,
          'user': request.user,
          'page': 'reports'})
+         
+         
+def dashboard(request):
+    munki = {}
+    munki['errors'] = MunkiReport.objects.filter(errors__gt=0).count()
+    munki['warnings'] = MunkiReport.objects.filter(warnings__gt=0).count()
+    munki['activity'] = MunkiReport.objects.filter(
+                            activity__isnull=False).count()
+                            
+    now = datetime.now()
+    hour_ago = now - timedelta(hours=1)
+    today = date.today()
+    week_ago = today - timedelta(days=7)
+    month_ago = today - timedelta(days=30)
+    three_months_ago = today - timedelta(days=90)
+
+    munki['checked_in_this_hour'] = Machine.objects.filter(
+        last_munki_update__gte=hour_ago).count()
+    munki['checked_in_today'] = Machine.objects.filter(
+        last_munki_update__gte=today).count()
+    munki['checked_in_past_week'] = Machine.objects.filter(
+        last_munki_update__gte=week_ago).count()
+    
+    munki['not_for_week'] = Machine.objects.filter(
+        last_munki_update__range=(month_ago, week_ago)).count()
+    munki['not_for_month'] = Machine.objects.filter(
+        last_munki_update__range=(three_months_ago, month_ago)).count()
+    munki['not_three_months'] = Machine.objects.exclude(
+        last_munki_update__gte=three_months_ago).count()
+    
+    # get counts of each os version
+    os_info = Machine.objects.values(
+                'os_version').annotate(count=Count('os_version'))
+    
+    # get counts of each machine_model type
+    machine_info = Machine.objects.values(
+                      'machine_model').annotate(count=Count('machine_model'))
+    
+    # find machines with less than 5GB of available disk space
+    low_disk_machines = Machine.objects.filter(
+            available_disk_space__lt=5*2**20).values(
+                'mac', 'hostname', 'available_disk_space')
+                      
+    return render_to_response('reports/dashboard.html',
+        {'munki': munki,
+         'os_info': os_info,
+         'machine_info': machine_info,
+         'low_disk_machines': low_disk_machines})
 
 
 @login_required
