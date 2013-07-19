@@ -159,7 +159,7 @@ def detail(request, manifest_name):
         if not request.user.has_perm('reports.change_machine'):
             return HttpResponse(json.dumps('error'))
         if request.is_ajax():
-            json_data = json.loads(request.raw_post_data)
+            json_data = json.loads(request.body)
             if json_data:
                 manifest_detail = Manifest.read(manifest_name)
                 for key in json_data.keys():
