@@ -21,7 +21,7 @@
         {% endif %}
     {% elif value|type_is:'dictionary' %}
         <tr><th scope="row">{{ key }}</th>
-        <td>{% include "catalogs/dict_list.html" with dict_list=value only %}</td></tr>
+        <td>{% include "catalogs/generic_dict.html" with generic_dict=value only %}</td></tr>
     {% elif '_script' in key %}
         {# special case: show scripts in monospaced font #}
         <tr><th scope="row">{{ key }}</th><td class="code">{{ value }}</td></tr>

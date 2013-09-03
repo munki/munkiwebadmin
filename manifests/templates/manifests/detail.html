@@ -34,10 +34,13 @@
 			{% for item in manifest.catalogs %}
 			    <li id='{{ item }}' 
 			    {% if item not in valid_catalogs %}
-			      class='error lineitem'>{{ item }}
+			      class='error lineitem'>
+			        <div class='editable'>{{ item }}</div>
 			    {% else %}
 			      class='lineitem'>
-			      <a href='/catalog/{{ item }}/'>{{ item }}</a>
+			      <a href='/catalog/{{ item }}/'>
+			          <div class='editable'>{{ item }}</div>
+			      </a>
 			    {% endif %}
 			    </li>
 			{% endfor %}
@@ -58,11 +61,15 @@
 			{% for i_manifest in manifest.included_manifests %}
 			  <li id='{{ i_manifest }}' 
 			  {% if i_manifest not in valid_manifest_names %}
-			    class='error lineitem'>{{ i_manifest }}
+			    class='error lineitem'>
+			        <div class='editable'>{{ i_manifest }}</div>
 			  {% else %}
 			    class='lineitem'>
-				  <a href='#{{ i_manifest }}' onClick="getManifestDetail('{{ i_manifest }}')">{{ i_manifest }}</a>
-				{% endif %}</li>
+				  <a href='#{{ i_manifest }}' onClick="getManifestDetail('{{ i_manifest }}')">
+				      <div class='editable'>{{ i_manifest }}</div>
+				  </a>
+				{% endif %}
+				</li>
 			{% endfor %}
 		</ul>
 		</div>
