@@ -2,6 +2,7 @@ from django.db import models
 
 from inventory.models import InventoryItem
 
+from urllib import quote_plus
 
 class License(models.Model):
     item_name = models.CharField(max_length=64, unique=True, primary_key=True)
@@ -51,7 +52,7 @@ class License(models.Model):
         if self.inventory_path:
             parts.append("path=%s" % self.inventory_path)
         if parts:
-            return '?%s' % '&'.join(parts)
+            return quote_plus('?%s' % '&'.join(parts), safe='?&=')
         else:
             return ''
         
