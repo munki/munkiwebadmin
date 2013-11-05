@@ -208,11 +208,12 @@ def dashboard(request):
     
     # get counts of each os version
     os_info = Machine.objects.values(
-                'os_version').annotate(count=Count('os_version'))
+                'os_version').annotate(count=Count('os_version')).order_by()
     
     # get counts of each machine_model type
     machine_info = Machine.objects.values(
-                      'machine_model').annotate(count=Count('machine_model'))
+                     'machine_model').annotate(
+                       count=Count('machine_model')).order_by()
     
     # find machines with less than 5GB of available disk space
     low_disk_machines = Machine.objects.filter(
