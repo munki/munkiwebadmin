@@ -3,8 +3,14 @@
 # Creates a pkg installer for the preflight, postflight and
 # report_broken_client scripts.
 #
-# Joe Wollard <joe.wollard@gmail.com> 2013.03.23
+# Joe Wollard <joe.wollard@gmail.com> 2013.11.01
 #
+
+if [ `id -u` != 0 ]
+then
+	echo "You must run this script as root."
+	exit 1
+fi
 
 BUNDLE_IDENTIFIER="com.googlecode.munki.munkiwebadmin-scripts"
 BUNDLE_VERSION=`date +"%Y.%m.%d"`
@@ -91,15 +97,17 @@ read -p "Specify allowed network prefixes: " MWA_ALLOWED_NETWORKS
 
 
 # Create the package structure
-mkdir -p "${BUILD_DIR}/usr/local/munki"
 for item in ${FILE_LIST[@]}
 do
-	cp "${item}" "${BUILD_DIR}/usr/local/munki/"
+	cp "${item}" "${BUILD_DIR}/"
 done
+
+chmod 755 "${BUILD_DIR}/"*
+chown root:wheel "${BUILD_DIR}/"*
 
 
 # inject the data collected from the admin into the config file
-BUILD_CONF="${BUILD_DIR}/usr/local/munki/munkiwebadmin-config"
+BUILD_CONF="${BUILD_DIR}/munkiwebadmin-config"
 
 # Appropriately set the value of MWA_SSL_CERTIFICATE
 if [ -e "${MWA_CERT_FILE}" ]; then
@@ -115,41 +123,21 @@ fi
 # write the allowed networks array
 /usr/bin/sed -i '' -e "s|^MWA_ALLOWED_NETWORKS=.*$|MWA_ALLOWED_NETWORKS=( $MWA_ALLOWED_NETWORKS )|" "${BUILD_CONF}"
 
-# Create a postflight script to fix permissions
-SCRIPTS_DIR=`mktemp -d /tmp/${SCRIPT_NAME}.XXXXXX` || exit 1
-POSTINSTALL="${SCRIPTS_DIR}/postinstall"
-(
-cat <<'EOF'
-#!/bin/bash
-source /usr/local/munki/munkiwebadmin-config
-FILES=(
-	"preflight"
-	"postflight"
-	"report_broken_client"
-	"munkiwebadmin-config"
-)
-
-for item in ${FILES[@]}
-do
-	chmod 755 "${item}"
-	chown root:wheel "${item}"
-done
-
-chmod 755 "${MWA_SSL_CERTIFICATE}"
-chown root:wheel "${MWA_SSL_CERTIFICATE}"
-exit 0
-EOF
-) > "${POSTINSTALL}"
-
-chmod a+x "${POSTINSTALL}"
 
 
 # And finally, we get to build the package
 /usr/bin/pkgbuild --root "${BUILD_DIR}" \
-	--scripts "${SCRIPTS_DIR}" \
+	--install-location "/usr/local/munki/" \
+	--ownership preserve \
 	--identifier "${BUNDLE_IDENTIFIER}" \
 	--version "${BUNDLE_VERSION}" \
 	"munkiwebadmin_scripts-${BUNDLE_VERSION}.pkg"
+
+if [ ! -z $SUDO_USER ]
+then
+	chown $SUDO_USER "munkiwebadmin_scripts-${BUNDLE_VERSION}.pkg"
+fi
+
 
 echo "Cleaning up..."
 if [ ! -z $MWA_CERT_FILE ];then
