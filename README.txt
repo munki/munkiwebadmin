@@ -1,1 +1,1 @@
-See http://code.google.com/p/munki/wiki/MunkiWebAdmin for documentation.
+See https://github.com/munki/munkiwebadmin/wiki for documentation.
