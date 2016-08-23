@@ -1,3 +1,3 @@
-See https://github.com/munki/munkiwebadmin/wiki for documentation.
+This version of MunkiWebAdmin has been abandoned.
 
-See https://github.com/munki/mwa2 for the upcoming successor to MunkiWebAdmin.
+See https://github.com/munki/mwa2 for the successor to MunkiWebAdmin.
